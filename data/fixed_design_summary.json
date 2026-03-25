@@ -1,0 +1,10 @@
+{
+  "coef_width": 20,
+  "output_width": 16,
+  "ap_db": 0.030456661957935109,
+  "ast_db": 81.399366578719111,
+  "overflow_count": 0,
+  "acc_width": 46,
+  "taps": 261,
+  "order": 260
+}

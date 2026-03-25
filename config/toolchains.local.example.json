@@ -1,0 +1,6 @@
+{
+  "matlab_bin": "E:/MATLAB/R2024b/bin/matlab.exe",
+  "vivado_bin": "C:/Xilinx/Vivado/2024.1/bin/vivado.bat",
+  "target_part": "xc7z020clg400-2"
+}
+

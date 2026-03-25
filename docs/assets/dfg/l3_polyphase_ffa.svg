@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="280" viewBox="0 0 1040 280">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c3aed"/>
+    </marker>
+  </defs>
+  <rect width="1040" height="280" fill="#fffdf8"/>
+  <text x="40" y="45" font-family="Georgia" font-size="28" font-weight="bold">L=3 Polyphase / FFA FIR</text>
+  <text x="40" y="70" font-family="Consolas" font-size="16">L=3 Polyphase / FFA FIR | mult=132 add=261 reg=393 latency=47 spc=3</text>
+  <rect x="40" y="90" width="140" height="70" rx="12" fill="#f7f3eb" stroke="#1f2937" stroke-width="2"/><text x="110" y="130" text-anchor="middle" font-family="Georgia" font-size="20">Input</text><rect x="240" y="90" width="140" height="70" rx="12" fill="#f7f3eb" stroke="#1f2937" stroke-width="2"/><text x="310" y="130" text-anchor="middle" font-family="Georgia" font-size="20">Stage 1</text><rect x="440" y="90" width="140" height="70" rx="12" fill="#f7f3eb" stroke="#1f2937" stroke-width="2"/><text x="510" y="130" text-anchor="middle" font-family="Georgia" font-size="20">Stage 2</text><rect x="640" y="90" width="140" height="70" rx="12" fill="#f7f3eb" stroke="#1f2937" stroke-width="2"/><text x="710" y="130" text-anchor="middle" font-family="Georgia" font-size="20">Stage 3</text><rect x="860" y="90" width="140" height="70" rx="12" fill="#f7f3eb" stroke="#1f2937" stroke-width="2"/><text x="930" y="130" text-anchor="middle" font-family="Georgia" font-size="20">Output</text>
+  <line x1="180" y1="125" x2="240" y2="125" stroke="#7c3aed" stroke-width="3" marker-end="url(#arrow)"/><line x1="380" y1="125" x2="440" y2="125" stroke="#7c3aed" stroke-width="3" marker-end="url(#arrow)"/><line x1="580" y1="125" x2="640" y2="125" stroke="#7c3aed" stroke-width="3" marker-end="url(#arrow)"/><line x1="780" y1="125" x2="860" y2="125" stroke="#7c3aed" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="40" y="230" font-family="Consolas" font-size="16">critical path: phase branch plus recombination</text>
+</svg>

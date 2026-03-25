@@ -1,0 +1,7 @@
+flowchart LR
+    IN[Input sample] --> DL[Delay line]
+    DL --> PAIR[Symmetric sample pairing]
+    PAIR --> PRE[Pre-adders]
+    PRE --> MUL[Unique multipliers]
+    MUL --> ACC[Folded accumulator]
+    ACC --> OUT[Output]

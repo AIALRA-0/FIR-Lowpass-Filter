@@ -1,0 +1,7 @@
+{
+  "name": "step",
+  "length": 1024,
+  "coef_width": 20,
+  "output_width": 16,
+  "note": "Step response"
+}

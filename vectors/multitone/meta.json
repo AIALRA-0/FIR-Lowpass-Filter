@@ -1,0 +1,7 @@
+{
+  "name": "multitone",
+  "length": 2048,
+  "coef_width": 20,
+  "output_width": 16,
+  "note": "Passband+transition+stopband multi-tone"
+}

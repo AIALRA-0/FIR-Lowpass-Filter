@@ -1,0 +1,58 @@
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# MATLAB
+*.asv
+*.mex*
+slprj/
+work/
+codegen/
+*.mlx.autosave
+
+# Vivado / Xilinx
+.Xil/
+*.jou
+*.log
+*.str
+*.cache/
+*.hw/
+*.runs/
+*.sim/
+*.gen/
+*.xpr
+*.ltx
+*.bit
+*.bin
+*.wdb
+*.pb
+*.dcp
+*.rpt
+*.rpx
+
+# Editors
+.vscode/
+.idea/
+
+# Local config
+config/toolchains.local.json
+
+# Generated site/build artifacts
+site/
+build/
+dist/
+tmp/
+clockInfo.txt
+xsim.dir/
+xvlog.pb
+xelab.pb
+xsim.jou
+xsim.log

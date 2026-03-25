@@ -1,0 +1,14 @@
+{
+  "selected_design": "final_spec__firpm__n260__ap0.050",
+  "taps": 261,
+  "vector_cases": [
+    "impulse",
+    "step",
+    "random",
+    "passband_edge",
+    "transition",
+    "stopband",
+    "multitone",
+    "overflow_corner"
+  ]
+}

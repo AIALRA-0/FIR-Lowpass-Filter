@@ -1,0 +1,7 @@
+flowchart LR
+    IN[2-lane input] --> DEMUX[Phase split]
+    DEMUX --> E0[Even polyphase branch]
+    DEMUX --> E1[Odd polyphase branch]
+    E0 --> COMB[Recombine outputs]
+    E1 --> COMB
+    COMB --> OUT[2-lane output]

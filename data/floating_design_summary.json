@@ -1,0 +1,27 @@
+{
+  "final_design": {
+    "design_id": "final_spec__firpm__n260__ap0.050",
+    "design_group": "final_spec",
+    "method": "firpm",
+    "order": 260,
+    "taps": 261,
+    "ap_db": 0.030366278542616944,
+    "ast_db": 83.990227670179735
+  },
+  "baseline_taps100": {
+    "design_id": "baseline_taps100__firpm__n99__ap0.100",
+    "method": "firpm",
+    "order": 99,
+    "taps": 100,
+    "ap_db": 2.631822191714543,
+    "ast_db": 51.456399266988313
+  },
+  "baseline_order100": {
+    "design_id": "baseline_order100__firpm__n100__ap0.100",
+    "method": "firpm",
+    "order": 100,
+    "taps": 101,
+    "ap_db": 2.52499370358962,
+    "ast_db": 51.80695192425592
+  }
+}

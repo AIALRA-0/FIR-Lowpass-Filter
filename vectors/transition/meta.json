@@ -1,0 +1,7 @@
+{
+  "name": "transition",
+  "length": 1024,
+  "coef_width": 20,
+  "output_width": 16,
+  "note": "Transition-band sinusoid"
+}

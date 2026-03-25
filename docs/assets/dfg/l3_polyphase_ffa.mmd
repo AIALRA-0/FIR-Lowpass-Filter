@@ -1,0 +1,9 @@
+flowchart LR
+    IN[3-lane input] --> DEMUX[Three-phase split]
+    DEMUX --> E0[Phase-0 branch]
+    DEMUX --> E1[Phase-1 branch]
+    DEMUX --> E2[Phase-2 branch]
+    E0 --> FFA[Recombine / FFA stage]
+    E1 --> FFA
+    E2 --> FFA
+    FFA --> OUT[3-lane output]

@@ -1,0 +1,45 @@
+{
+  "project_name": "FIR Lowpass Filter Research Kit",
+  "report_language": "zh",
+  "target_part": "xc7z020clg400-2",
+  "wp": 0.2,
+  "ws": 0.23,
+  "ast_min_db": 80.0,
+  "baseline_taps": 100,
+  "baseline_order": 100,
+  "ap_targets_db": [0.01, 0.05, 0.1],
+  "design_methods": ["firpm", "firls", "kaiser"],
+  "design_selection": {
+    "ast_min_db": 80.0,
+    "ap_max_db": 0.05,
+    "prefer_odd_length": true,
+    "prefer_lower_group_delay_if_tied": true
+  },
+  "fixed_point": {
+    "input_width": 16,
+    "input_frac_bits": 15,
+    "coef_width_candidates": [16, 18, 20, 22, 24],
+    "output_width_candidates": [16, 18, 20, 24],
+    "rounding_mode": "nearest",
+    "overflow_mode": "saturate",
+    "guard_bits_preadd": 1,
+    "extra_acc_guard_bits": 2
+  },
+  "vector_generation": {
+    "random_length": 2048,
+    "sine_length": 1024,
+    "multitone_length": 2048,
+    "impulse_length": 1024,
+    "step_length": 1024,
+    "seed": 43210
+  },
+  "architectures": [
+    "symmetry_folded",
+    "pipelined_systolic",
+    "l2_polyphase",
+    "l3_polyphase_ffa",
+    "l3_pipeline",
+    "vendor_fir_ip"
+  ]
+}
+

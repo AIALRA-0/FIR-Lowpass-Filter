@@ -1,0 +1,7 @@
+{
+  "name": "random",
+  "length": 2048,
+  "coef_width": 20,
+  "output_width": 16,
+  "note": "Uniform random full-scale"
+}

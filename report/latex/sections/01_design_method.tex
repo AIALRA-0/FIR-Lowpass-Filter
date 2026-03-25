@@ -1,0 +1,12 @@
+\section{设计方法}
+
+本章说明课程规格、MATLAB 归一化约定、双 baseline 的设置理由，以及最终满足规格的滤波器设计流程。
+
+\subsection{规格冻结}
+
+项目规格以仓库中的 \texttt{spec/spec.json} 为单一真源，所有 MATLAB、RTL、Vivado 与文档均从该文件读取核心约束。
+
+\subsection{设计路线}
+
+主设计方法选择 Parks-McClellan 等波纹设计，对照方法包括 least-squares 与 Kaiser window。
+
