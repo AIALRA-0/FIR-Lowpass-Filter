@@ -17,6 +17,7 @@ localparam WPROD = `FIR_WIN + `FIR_WCOEF + 1;
 `include "fir_coeffs.vh"
 
 wire [`FIR_WIN*(`FIR_TAPS-1)-1:0] tap_bus;
+wire [`FIR_WIN*`FIR_TAPS-1:0]     hist_bus;
 wire signed [WPRE-1:0]            pre_sum [0:`FIR_UNIQ-1];
 wire signed [WPROD-1:0]           prod    [0:`FIR_UNIQ-1];
 reg  signed [`FIR_WACC-1:0]       acc_comb;
@@ -33,16 +34,8 @@ delay_line #(
     .taps_flat(tap_bus)
 );
 
-function signed [`FIR_WIN-1:0] sample_at;
-    input integer pos;
-    begin
-        if (pos == 0) begin
-            sample_at = in_sample;
-        end else begin
-            sample_at = tap_bus[pos*`FIR_WIN-1 -: `FIR_WIN];
-        end
-    end
-endfunction
+assign hist_bus[`FIR_WIN-1:0] = in_sample;
+assign hist_bus[`FIR_WIN*`FIR_TAPS-1:`FIR_WIN] = tap_bus;
 
 genvar g;
 generate
@@ -52,8 +45,8 @@ for (g = 0; g < `FIR_UNIQ; g = g + 1) begin : g_folded_taps
     wire signed [`FIR_WIN-1:0] s_left;
     wire signed [`FIR_WIN-1:0] s_right;
 
-    assign s_left  = sample_at(LEFT);
-    assign s_right = (LEFT == RIGHT) ? {`FIR_WIN{1'b0}} : sample_at(RIGHT);
+    assign s_left  = hist_bus[(LEFT+1)*`FIR_WIN-1 -: `FIR_WIN];
+    assign s_right = (LEFT == RIGHT) ? {`FIR_WIN{1'b0}} : hist_bus[(RIGHT+1)*`FIR_WIN-1 -: `FIR_WIN];
 
     preadd_mult #(
         .WIN(`FIR_WIN),

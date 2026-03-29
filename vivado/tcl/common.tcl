@@ -1,4 +1,7 @@
 proc fir_repo_root {} {
+    if {[info exists ::env(FIR_REPO_ROOT)] && $::env(FIR_REPO_ROOT) ne ""} {
+        return [file normalize $::env(FIR_REPO_ROOT)]
+    }
     return [file normalize [file join [file dirname [info script]] .. ..]]
 }
 
@@ -24,6 +27,8 @@ proc fir_common_sources {} {
         [file join $root rtl common fir_delay_signed.v] \
         [file join $root rtl common preadd_mult.v] \
         [file join $root rtl common round_sat.v] \
+        [file join $root rtl common fir_branch_core_symm.v] \
+        [file join $root rtl common fir_branch_core_full.v] \
     ]
 }
 

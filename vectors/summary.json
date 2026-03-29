@@ -1,14 +1,17 @@
 {
-  "selected_design": "final_spec__firpm__n260__ap0.050",
+  "selected_design": "q20_o16",
   "taps": 261,
   "vector_cases": [
     "impulse",
     "step",
     "random",
+    "random_short",
     "passband_edge",
     "transition",
     "stopband",
     "multitone",
-    "overflow_corner"
+    "overflow_corner",
+    "lane_alignment_l2",
+    "lane_alignment_l3"
   ]
 }

@@ -12,19 +12,28 @@ module round_sat #(
 localparam signed [OUT_WIDTH-1:0] OUT_MAX = {1'b0, {(OUT_WIDTH-1){1'b1}}};
 localparam signed [OUT_WIDTH-1:0] OUT_MIN = {1'b1, {(OUT_WIDTH-1){1'b0}}};
 
-reg signed [IN_WIDTH-1:0] rounded_full;
-reg signed [IN_WIDTH-1:0] shifted_full;
+reg signed [IN_WIDTH:0] extended_din;
+reg [IN_WIDTH:0]        abs_full;
+reg [IN_WIDTH:0]        rounded_abs;
+reg signed [IN_WIDTH:0] shifted_full;
 
 always @* begin
     if (SHIFT == 0) begin
-        rounded_full = din;
-    end else if (din >= 0) begin
-        rounded_full = din + ({{(IN_WIDTH-1){1'b0}}, 1'b1} <<< (SHIFT - 1));
+        shifted_full = {din[IN_WIDTH-1], din};
     end else begin
-        rounded_full = din - ({{(IN_WIDTH-1){1'b0}}, 1'b1} <<< (SHIFT - 1));
+        extended_din = {din[IN_WIDTH-1], din};
+        if (extended_din < 0) begin
+            abs_full = $unsigned(-extended_din);
+        end else begin
+            abs_full = $unsigned(extended_din);
+        end
+        rounded_abs = abs_full + ({{IN_WIDTH{1'b0}}, 1'b1} <<< (SHIFT - 1));
+        if (extended_din < 0) begin
+            shifted_full = -$signed(rounded_abs >> SHIFT);
+        end else begin
+            shifted_full = $signed(rounded_abs >> SHIFT);
+        end
     end
-
-    shifted_full = rounded_full >>> SHIFT;
 
     if (shifted_full > $signed(OUT_MAX)) begin
         dout = OUT_MAX;

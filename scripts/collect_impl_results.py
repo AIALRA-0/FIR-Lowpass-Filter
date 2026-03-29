@@ -15,8 +15,8 @@ TOP_META = {
     "fir_symm_base": {"arch": "symmetry_folded", "samples_per_cycle": 1, "latency_cycles": 1},
     "fir_pipe_systolic": {"arch": "pipelined_systolic", "samples_per_cycle": 1, "latency_cycles": (FLOAT_SUMMARY["final_design"]["taps"] + 1) // 2},
     "fir_l2_polyphase": {"arch": "l2_polyphase", "samples_per_cycle": 2, "latency_cycles": 1},
-    "fir_l3_polyphase": {"arch": "l3_polyphase_ffa", "samples_per_cycle": 3, "latency_cycles": 1},
-    "fir_l3_pipe": {"arch": "l3_pipeline", "samples_per_cycle": 3, "latency_cycles": 2},
+    "fir_l3_polyphase": {"arch": "l3_polyphase", "samples_per_cycle": 3, "latency_cycles": 1},
+    "fir_l3_pipe": {"arch": "l3_pipeline", "samples_per_cycle": 3, "latency_cycles": 3},
 }
 
 
@@ -112,4 +112,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

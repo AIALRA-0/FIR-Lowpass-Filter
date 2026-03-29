@@ -117,8 +117,7 @@ ensure_dir(coeffs_dir);
 ensure_dir(rtl_dir);
 
 wcoef = selected.coef_width(1);
-scale = 2^(wcoef - 1);
-coeff_int = round(coeffs(:) .* scale);
+coeff_int = quantize_signed_frac(coeffs(:), wcoef, wcoef - 1);
 
 full_memh = fullfile(coeffs_dir, sprintf('final_fixed_q%d_full.memh', wcoef));
 local_write_hex_file(full_memh, coeff_int, wcoef);
@@ -148,7 +147,7 @@ assert(fid ~= -1, 'Failed to write fir_coeffs.vh.');
 cleanup1 = onCleanup(@() fclose(fid));
 fprintf(fid, '`ifndef FIR_COEFFS_VH\n');
 fprintf(fid, '`define FIR_COEFFS_VH\n');
-fprintf(fid, 'function signed [`FIR_WCOEF-1:0] fir_coeff_at;\n');
+fprintf(fid, 'function automatic signed [`FIR_WCOEF-1:0] fir_coeff_at;\n');
 fprintf(fid, '  input integer idx;\n');
 fprintf(fid, '  begin\n');
 fprintf(fid, '    case (idx)\n');
@@ -164,6 +163,8 @@ fprintf(fid, '    endcase\n');
 fprintf(fid, '  end\n');
 fprintf(fid, 'endfunction\n');
 fprintf(fid, '`endif\n');
+
+local_export_polyphase_files(coeffs_dir, rtl_dir, coeff_int, wcoef);
 end
 
 function local_write_hex_file(path_str, values, width)
@@ -202,4 +203,78 @@ fprintf(fid, '- `coeffs/final_fixed_q*_full.memh`\n');
 fprintf(fid, '- `coeffs/final_fixed_q*_unique.memh`\n');
 fprintf(fid, '- `rtl/common/fir_params.vh`\n');
 fprintf(fid, '- `rtl/common/fir_coeffs.vh`\n');
+fprintf(fid, '- `coeffs/final_fixed_q*_l2_e*.memh`\n');
+fprintf(fid, '- `coeffs/final_fixed_q*_l3_e*.memh`\n');
+fprintf(fid, '- `rtl/common/fir_polyphase_params.vh`\n');
+fprintf(fid, '- `rtl/common/fir_polyphase_coeffs.vh`\n');
+end
+
+function local_export_polyphase_files(coeffs_dir, rtl_dir, coeff_int, wcoef)
+branches = { ...
+    struct('name', 'l2_e0', 'full', coeff_int(1:2:end), 'uniq', coeff_int(1:2:end)), ...
+    struct('name', 'l2_e1', 'full', coeff_int(2:2:end), 'uniq', coeff_int(2:2:end)), ...
+    struct('name', 'l3_e0', 'full', coeff_int(1:3:end), 'uniq', coeff_int(1:3:end)), ...
+    struct('name', 'l3_e1', 'full', coeff_int(2:3:end), 'uniq', coeff_int(2:3:end)), ...
+    struct('name', 'l3_e2', 'full', coeff_int(3:3:end), 'uniq', coeff_int(3:3:end)) ...
+    };
+
+branches{1}.uniq = branches{1}.full(1:ceil(numel(branches{1}.full) / 2));
+branches{2}.uniq = branches{2}.full(1:numel(branches{2}.full) / 2);
+branches{4}.uniq = branches{4}.full(1:ceil(numel(branches{4}.full) / 2));
+
+for bidx = 1:numel(branches)
+    b = branches{bidx};
+    local_write_hex_file(fullfile(coeffs_dir, sprintf('final_fixed_q%d_%s_full.memh', wcoef, b.name)), b.full, wcoef);
+    local_write_hex_file(fullfile(coeffs_dir, sprintf('final_fixed_q%d_%s_unique.memh', wcoef, b.name)), b.uniq, wcoef);
+end
+
+params_path = fullfile(rtl_dir, 'fir_polyphase_params.vh');
+fid = fopen(params_path, 'w');
+assert(fid ~= -1, 'Failed to write fir_polyphase_params.vh.');
+cleanup0 = onCleanup(@() fclose(fid));
+fprintf(fid, '`ifndef FIR_POLYPHASE_PARAMS_VH\n');
+fprintf(fid, '`define FIR_POLYPHASE_PARAMS_VH\n');
+fprintf(fid, '`define FIR_L2_E0_TAPS %d\n', numel(branches{1}.full));
+fprintf(fid, '`define FIR_L2_E0_UNIQ %d\n', numel(branches{1}.uniq));
+fprintf(fid, '`define FIR_L2_E1_TAPS %d\n', numel(branches{2}.full));
+fprintf(fid, '`define FIR_L2_E1_UNIQ %d\n', numel(branches{2}.uniq));
+fprintf(fid, '`define FIR_L3_E0_TAPS %d\n', numel(branches{3}.full));
+fprintf(fid, '`define FIR_L3_E0_UNIQ %d\n', numel(branches{3}.uniq));
+fprintf(fid, '`define FIR_L3_E1_TAPS %d\n', numel(branches{4}.full));
+fprintf(fid, '`define FIR_L3_E1_UNIQ %d\n', numel(branches{4}.uniq));
+fprintf(fid, '`define FIR_L3_E2_TAPS %d\n', numel(branches{5}.full));
+fprintf(fid, '`define FIR_L3_E2_UNIQ %d\n', numel(branches{5}.uniq));
+fprintf(fid, '`endif\n');
+
+coeff_path = fullfile(rtl_dir, 'fir_polyphase_coeffs.vh');
+fid = fopen(coeff_path, 'w');
+assert(fid ~= -1, 'Failed to write fir_polyphase_coeffs.vh.');
+cleanup1 = onCleanup(@() fclose(fid));
+fprintf(fid, '`ifndef FIR_POLYPHASE_COEFFS_VH\n');
+fprintf(fid, '`define FIR_POLYPHASE_COEFFS_VH\n\n');
+local_write_polyphase_function(fid, 'fir_l2_e0_coeff_at', branches{1}.uniq, wcoef);
+local_write_polyphase_function(fid, 'fir_l2_e1_coeff_at', branches{2}.uniq, wcoef);
+local_write_polyphase_function(fid, 'fir_l3_e0_coeff_at', branches{3}.full, wcoef);
+local_write_polyphase_function(fid, 'fir_l3_e1_coeff_at', branches{4}.uniq, wcoef);
+local_write_polyphase_function(fid, 'fir_l3_e2_coeff_at', branches{5}.full, wcoef);
+fprintf(fid, '`endif\n');
+end
+
+function local_write_polyphase_function(fid, func_name, values, width)
+fprintf(fid, 'function automatic signed [`FIR_WCOEF-1:0] %s;\n', func_name);
+fprintf(fid, '  input integer idx;\n');
+fprintf(fid, '  begin\n');
+fprintf(fid, '    case (idx)\n');
+for idx = 1:numel(values)
+    value = values(idx);
+    if value < 0
+        fprintf(fid, '      %d: %s = -%d''sd%d;\n', idx - 1, func_name, width, abs(value));
+    else
+        fprintf(fid, '      %d: %s = %d''sd%d;\n', idx - 1, func_name, width, value);
+    end
+end
+fprintf(fid, '      default: %s = %d''sd0;\n', func_name, width);
+fprintf(fid, '    endcase\n');
+fprintf(fid, '  end\n');
+fprintf(fid, 'endfunction\n\n');
 end

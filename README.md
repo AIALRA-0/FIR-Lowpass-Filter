@@ -12,6 +12,18 @@
 - `L=3 + pipeline`
 - `vendor FIR IP`
 
+## 当前三分钟结论
+
+- 满足规格的最终滤波器是 `firpm / order 260 / 261 taps`
+- 默认固定点是 `Q1.15 + Wcoef20 + Wout16 + Wacc46`
+- 标量与向量 bit-true 回归都已经闭环
+- 当前成功落板的最佳版本是 `fir_pipe_systolic`
+  - `307.031 MHz`
+  - `132 DSP`
+  - `3.951 nJ/sample`
+- `fir_l2_polyphase` 已经是货真价实的 `polyphase + symmetry` RTL，并成功在 `xc7z020clg400-2` 上实现
+- `fir_l3_polyphase` / `fir_l3_pipe` 当前 non-FFA 版本功能正确，但在 `xc7z020` 上被 `LUT/CARRY4` 资源上限挡住
+
 ## 项目目标
 
 - 满足规格：`wp = 0.2`、`ws = 0.23`、`Ast >= 80 dB`
@@ -32,8 +44,13 @@
    - `matlab -batch "run('matlab/vectors/gen_vectors.m')"`
 5. 生成 DFG/SFG 图：
    - `python scripts/generate_dfg.py`
-6. 运行 Vivado 批处理：
-   - `vivado -mode batch -source vivado/tcl/run_all.tcl`
+6. 运行回归：
+   - `powershell -ExecutionPolicy Bypass -File scripts/run_scalar_regression.ps1 -Dut base -Case impulse`
+   - `powershell -ExecutionPolicy Bypass -File scripts/run_vector_regression.ps1 -Dut l2 -Case random_short`
+7. 运行 Vivado 批处理：
+   - `powershell -ExecutionPolicy Bypass -File scripts/run_vivado_impl.ps1 -Top fir_symm_base`
+   - `powershell -ExecutionPolicy Bypass -File scripts/run_vivado_impl.ps1 -Top fir_pipe_systolic`
+   - `powershell -ExecutionPolicy Bypass -File scripts/run_vivado_impl.ps1 -Top fir_l2_polyphase`
 
 ## 当前状态
 
@@ -50,9 +67,16 @@
 - 浮点结果：`Ap = 0.0304 dB`，`Ast = 83.9902 dB`
 - 固定点默认：`Q1.15` 输入，`20-bit` 系数，`16-bit` 输出，`46-bit` 累加器
 - 量化后结果：`Ap = 0.0305 dB`，`Ast = 81.3994 dB`
+- 最小回归已通过：
+  - 标量：`fir_symm_base`、`fir_pipe_systolic`
+  - 向量：`fir_l2_polyphase`、`fir_l3_polyphase`、`fir_l3_pipe`
 - 已完成 Vivado 实现：
-  - `fir_symm_base`：约 `51.5 MHz`，`2785 LUT`，`3552 FF`，`126 DSP`
-  - `fir_pipe_systolic`：约 `264.4 MHz`，`16643 LUT`，`17332 FF`，`132 DSP`
+  - `fir_symm_base`：`52.469 MHz`，`2839 LUT`，`3569 FF`，`126 DSP`
+  - `fir_pipe_systolic`：`307.031 MHz`，`16710 LUT`，`17224 FF`，`132 DSP`
+  - `fir_l2_polyphase`：`52.809 MHz`，`13472 LUT`，`4396 FF`，`212 DSP`
+- 当前未成功 place：
+  - `fir_l3_polyphase`：`CARRY4 26769 > 13300`，`LUT as Logic 77369 > 53200`
+  - `fir_l3_pipe`：`CARRY4 26769 > 13300`，`LUT as Logic 77385 > 53200`
 
 ## 目录结构
 
@@ -76,6 +100,8 @@ reports/        研究与实现分析 Markdown
 
 - `performance hero`：最大吞吐或最高 `throughput / Fclk` 表现最优
 - `efficiency hero`：`throughput-per-DSP` 或 `energy-per-sample` 表现最优
+
+当前在已成功落板的版本中，二者都由 `fir_pipe_systolic` 获胜。
 
 ## 同步约定
 

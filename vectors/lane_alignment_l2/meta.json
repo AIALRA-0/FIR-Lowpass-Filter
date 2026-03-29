@@ -1,0 +1,7 @@
+{
+  "name": "lane_alignment_l2",
+  "length": 17,
+  "coef_width": 20,
+  "output_width": 16,
+  "note": "Non-multiple-of-2 patterned sequence for lane ordering and flush checks"
+}

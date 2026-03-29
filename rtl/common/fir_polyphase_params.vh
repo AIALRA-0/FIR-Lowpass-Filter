@@ -1,0 +1,13 @@
+`ifndef FIR_POLYPHASE_PARAMS_VH
+`define FIR_POLYPHASE_PARAMS_VH
+`define FIR_L2_E0_TAPS 131
+`define FIR_L2_E0_UNIQ 66
+`define FIR_L2_E1_TAPS 130
+`define FIR_L2_E1_UNIQ 65
+`define FIR_L3_E0_TAPS 87
+`define FIR_L3_E0_UNIQ 87
+`define FIR_L3_E1_TAPS 87
+`define FIR_L3_E1_UNIQ 44
+`define FIR_L3_E2_TAPS 87
+`define FIR_L3_E2_UNIQ 87
+`endif

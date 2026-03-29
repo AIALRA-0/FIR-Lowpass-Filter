@@ -3,8 +3,8 @@ function result = sim_fixed_response(coeffs_q, spec, coef_width, output_width, i
 
 win = spec.fixed_point.input_width;
 fin = spec.fixed_point.input_frac_bits;
-coeff_int = round(coeffs_q(:) .* 2^(coef_width - 1));
-input_int = round(input_signal(:) .* 2^fin);
+coeff_int = quantize_signed_frac(coeffs_q(:), coef_width, coef_width - 1);
+input_int = quantize_signed_frac(input_signal(:), win, fin);
 full_conv = conv(double(input_int), double(coeff_int));
 
 nuniq = ceil(numel(coeffs_q) / 2);
@@ -27,4 +27,3 @@ result.acc_width = wacc;
 result.coef_width = coef_width;
 result.output_width = output_width;
 end
-
