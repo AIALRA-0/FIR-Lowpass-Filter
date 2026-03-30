@@ -17,6 +17,30 @@ TOP_META = {
     "fir_l2_polyphase": {"arch": "l2_polyphase", "samples_per_cycle": 2, "latency_cycles": 1},
     "fir_l3_polyphase": {"arch": "l3_polyphase", "samples_per_cycle": 3, "latency_cycles": 1},
     "fir_l3_pipe": {"arch": "l3_pipeline", "samples_per_cycle": 3, "latency_cycles": 3},
+    "fir_vendor_ip_core": {"arch": "vendor_fir_ip", "samples_per_cycle": 1, "latency_cycles": (FLOAT_SUMMARY["final_design"]["taps"] + 1) // 2},
+}
+
+SYSTEM_META = {
+    "zu4ev_fir_pipe_systolic_top": {
+        "arch": "board_shell_custom",
+        "samples_per_cycle": 1,
+        "latency_cycles": (FLOAT_SUMMARY["final_design"]["taps"] + 1) // 2,
+        "build_dir": ROOT / "build" / "zu4ev_system" / "zu4ev_fir_pipe_systolic_top" / "zu4ev_fir_pipe_systolic_top.runs" / "impl_1",
+        "util_report": "fir_mpsoc_system_wrapper_utilization_placed.rpt",
+        "timing_report": "fir_mpsoc_system_wrapper_timing_summary_routed.rpt",
+        "power_report": "fir_mpsoc_system_wrapper_power_routed.rpt",
+        "target_period_ns": SPEC.get("target_target_period_ns", 3.333),
+    },
+    "zu4ev_fir_vendor_top": {
+        "arch": "board_shell_vendor_ip",
+        "samples_per_cycle": 1,
+        "latency_cycles": (FLOAT_SUMMARY["final_design"]["taps"] + 1) // 2,
+        "build_dir": ROOT / "build" / "zu4ev_system" / "zu4ev_fir_vendor_top" / "zu4ev_fir_vendor_top.runs" / "impl_1",
+        "util_report": "fir_mpsoc_system_wrapper_utilization_placed.rpt",
+        "timing_report": "fir_mpsoc_system_wrapper_timing_summary_routed.rpt",
+        "power_report": "fir_mpsoc_system_wrapper_power_routed.rpt",
+        "target_period_ns": SPEC.get("target_target_period_ns", 3.333),
+    },
 }
 
 
@@ -114,10 +138,53 @@ def collect_row(top_name: str):
     }
 
 
+def collect_system_row(top_name: str):
+    meta = SYSTEM_META[top_name]
+    build_dir = meta["build_dir"]
+    util = build_dir / meta["util_report"]
+    timing = build_dir / meta["timing_report"]
+    power = build_dir / meta["power_report"]
+    if not (util.exists() and timing.exists() and power.exists()):
+        return None
+
+    lut, ff, dsp, bram = parse_utilization(util)
+    target_period = float(meta["target_period_ns"])
+    target_period, wns, tns, fmax_mhz = parse_timing(timing, target_period)
+    power_total, power_dynamic, power_static = parse_power(power)
+    throughput_msps = meta["samples_per_cycle"] * fmax_mhz
+    energy_per_sample_nj = (power_total / (throughput_msps * 1e6)) * 1e9
+    return {
+        "top": top_name,
+        "architecture": meta["arch"],
+        "part": SPEC["target_part"],
+        "taps": FLOAT_SUMMARY["final_design"]["taps"],
+        "samples_per_cycle": meta["samples_per_cycle"],
+        "latency_cycles": meta["latency_cycles"],
+        "target_period_ns": target_period,
+        "wns_ns": wns,
+        "tns_ns": tns,
+        "fmax_mhz_est": round(fmax_mhz, 3),
+        "throughput_msps_est": round(throughput_msps, 3),
+        "lut": lut,
+        "ff": ff,
+        "dsp": dsp,
+        "bram": bram,
+        "power_total_w": power_total,
+        "power_dynamic_w": power_dynamic,
+        "power_static_w": power_static,
+        "energy_per_sample_nj_est": round(energy_per_sample_nj, 6),
+        "report_dir": str(build_dir.relative_to(ROOT)).replace("\\", "/"),
+    }
+
+
 def main():
     rows = []
     for top_name in TOP_META:
         row = collect_row(top_name)
+        if row is not None:
+            rows.append(row)
+    for top_name in SYSTEM_META:
+        row = collect_system_row(top_name)
         if row is not None:
             rows.append(row)
 

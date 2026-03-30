@@ -7,7 +7,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 VECTORS = ROOT / "vectors"
 OUT_DIR = ROOT / "vitis" / "zu4ev_baremetal" / "src" / "generated"
-CASES = ("impulse", "step", "random_short")
+CASES = (
+    ("impulse", "impulse"),
+    ("step", "step"),
+    ("random_short", "random_short"),
+    ("passband_edge_sine", "passband_edge"),
+    ("transition_sine", "transition"),
+    ("multitone", "multitone"),
+    ("stopband_sine", "stopband"),
+    ("large_random_buffer", "random"),
+)
 
 
 def load_memh(path: Path) -> list[int]:
@@ -24,11 +33,14 @@ def load_memh(path: Path) -> list[int]:
 
 
 def emit_header(case_info: list[dict[str, object]]) -> str:
+    max_length = max(int(item["length"]) for item in case_info)
     lines = [
         "#ifndef FIR_ZU4EV_VECTORS_H",
         "#define FIR_ZU4EV_VECTORS_H",
         "",
         "#include <stdint.h>",
+        "",
+        f"#define FIR_MAX_VECTOR_LENGTH {max_length}U",
         "",
         "typedef struct {",
         "    const char *name;",
@@ -101,15 +113,23 @@ def emit_source(case_info: list[dict[str, object]]) -> str:
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     case_info = []
-    for case_name in CASES:
-        meta = json.loads((VECTORS / case_name / "meta.json").read_text(encoding="utf-8"))
+    for case_name, vector_dir_name in CASES:
+        vector_dir = VECTORS / vector_dir_name
+        meta = json.loads((vector_dir / "meta.json").read_text(encoding="utf-8"))
+        case_len = int(meta["length"])
+        input_values = load_memh(vector_dir / "input_scalar.memh")[:case_len]
+        golden_values = load_memh(vector_dir / "golden_scalar.memh")[:case_len]
+        if len(input_values) != case_len:
+            raise RuntimeError(f"{case_name}: expected {case_len} input samples, got {len(input_values)}")
+        if len(golden_values) != case_len:
+            raise RuntimeError(f"{case_name}: expected {case_len} golden samples, got {len(golden_values)}")
         case_info.append(
             {
                 "name": case_name,
                 "symbol": f"fir_case_{case_name}",
-                "length": int(meta["length"]),
-                "input": load_memh(VECTORS / case_name / "input_scalar.memh"),
-                "golden": load_memh(VECTORS / case_name / "golden_scalar.memh"),
+                "length": case_len,
+                "input": input_values,
+                "golden": golden_values,
             }
         )
     (OUT_DIR / "fir_vectors.h").write_text(emit_header(case_info), encoding="utf-8")

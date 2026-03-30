@@ -1,0 +1,17 @@
+FSBL is running on RPU. 
+Warning: APU-only restart is not supported if FSBL boots on RPU.
+ZU4EV FIR bare-metal harness
+stage=platform_init_begin
+stage=platform_init_done
+stage=dma_init_begin
+stage=dma_init_done
+Console=COM9, arch_id=1
+stage=impulse:case_begin len=1024
+stage=impulse:buffers_loaded
+stage=impulse:buffers_ready
+stage=impulse:ctrl_written
+stage=impulse:s2mm_started
+stage=impulse:mm2s_started
+[impulse] DMA timeout
+[impulse] dma_state@timeout mm2s_cr=0x00010003 mm2s_sr=0x00000000 s2mm_cr=0x00010003 s2mm_sr=0x00000000
+[impulse] shell_state@timeout status=0x00000002 cycles=2670044329 seen=0 emitted=0

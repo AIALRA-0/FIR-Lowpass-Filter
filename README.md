@@ -18,14 +18,16 @@
 - 默认固定点是 `Q1.15 + Wcoef20 + Wout16 + Wacc46`
 - 标量与向量 bit-true 回归都已经闭环
 - 主平台已经切到 `XCZU4EV-SFVC784-2I`，JTAG 可识别 `xczu4` 与 `arm_dap`，UART 控制台是 `COM9 / CP210x`
-- `PS + PL` 系统壳已经能在 Vivado 中生成 bitstream 与 `.xsa`，当前验证通过的系统顶层是 `zu4ev_fir_pipe_systolic_top`
+- `PS + PL` 系统壳已经完成自动下载与板测闭环，当前通过的系统顶层是 `zu4ev_fir_pipe_systolic_top` 与 `zu4ev_fir_vendor_top`
 - 当前自研架构里的 `performance hero` 与 `efficiency hero` 都是 `fir_pipe_systolic`
   - `459.348 MHz`
   - `459.348 MS/s`
   - `132 DSP`
   - `3.803 nJ/sample`
 - `fir_l3_polyphase` 已经是共享 `L3 FFA core` 的真实压缩并行架构，并在 ZU4EV 上达到 `381.388 MS/s`
-- 当前主阻塞不再是“L3 放不下”，而是系统级壳、上板软件链和 vendor FIR IP 还没有全部收口
+- `vendor FIR IP` 已作为正式工业基线加入板级自动化闭环，并通过相同板上用例且 `mismatches = 0`
+- 最新正式板测套件已经扩展到 `8` 个用例，包含 `passband_edge_sine` 与 `transition_sine`
+- `fir_pipe_systolic` 与 `vendor FIR IP` 都已完成最近 `3` 次正式窗口重复运行，全部 `8/8` case 通过
 
 ## 项目目标
 
@@ -53,15 +55,22 @@
    - `powershell -ExecutionPolicy Bypass -File scripts/run_vivado_impl.ps1 -Top all`
 6. 运行 JTAG / 硬件探测：
    - `powershell -ExecutionPolicy Bypass -File scripts/check_jtag_stack.ps1`
-7. 构建 ZU4EV PS+PL 系统壳：
-   - `vivado -mode batch -source vivado/tcl/zu4ev/build_zu4ev_system.tcl`
+7. 运行 ZU4EV 自动烧录与板测闭环：
+   - `powershell -ExecutionPolicy Bypass -File scripts/run_zu4ev_closure.ps1 -Arch fir_pipe_systolic -ForceAppBuild -MaxAttempts 2`
+   - `powershell -ExecutionPolicy Bypass -File scripts/run_zu4ev_closure.ps1 -Arch vendor_fir_ip -ForceAppBuild -MaxAttempts 2`
 
 ## 当前状态
 
 - 规格真源：[`spec/spec.json`](spec/spec.json)
+- 主报告主稿：[`Report.md`](Report.md)
 - 项目状态：[`docs/status.md`](docs/status.md)
 - GitHub Pages 入口：[`docs/index.md`](docs/index.md)
 - JTAG / 上板指南：[`docs/bringup_mzu04a_zu4ev.md`](docs/bringup_mzu04a_zu4ev.md)
+- 板测报告：[`reports/board_validation.md`](reports/board_validation.md)
+- 板测稳定性：[`reports/board_stability.md`](reports/board_stability.md)
+- Vendor 对照：[`reports/vendor_vs_custom.md`](reports/vendor_vs_custom.md)
+- 方法口径：[`reports/methodology_summary.md`](reports/methodology_summary.md)
+- 时序/功耗分析：[`reports/timing_power_analysis.md`](reports/timing_power_analysis.md)
 - 系统壳状态：[`reports/system_shell_status.md`](reports/system_shell_status.md)
 - 文献矩阵：[`docs/literature/lit_matrix.md`](docs/literature/lit_matrix.md)
 - LaTeX 主文档：[`report/latex/main.tex`](report/latex/main.tex)
@@ -80,6 +89,16 @@
   - `fir_l2_polyphase`：`278.668 MS/s`，`5868 LUT`，`2439 FF`，`262 DSP`
   - `fir_l3_polyphase`：`381.388 MS/s`，`34687 LUT`，`6914 FF`，`175 DSP`
   - `fir_l3_pipe`：`363.284 MS/s`，`34786 LUT`，`7199 FF`，`175 DSP`
+- 板级系统壳结果：
+  - `zu4ev_fir_pipe_systolic_top`：`347.826 MHz`，`20253 LUT`，`21909 FF`，`132 DSP`，`8.542 nJ/sample`
+  - `zu4ev_fir_vendor_top`：`347.102 MHz`，`8856 LUT`，`13428 FF`，`131 DSP`，`8.243 nJ/sample`
+- 自动板测闭环：
+  - `fir_pipe_systolic`：最新通过运行见 `data/board_runs/fir_pipe_systolic/20260330-113630`
+  - `vendor_fir_ip`：最新通过运行见 `data/board_runs/vendor_fir_ip/20260330-113805`
+  - 统一汇总见 `data/board_results.csv`
+  - 两条架构均完成 `impulse / step / random_short / passband_edge_sine / transition_sine / multitone / stopband_sine / large_random_buffer`
+  - 两条架构均满足 `mismatches = 0`
+  - 最近 `3` 次正式窗口稳定性见 `data/analysis/board_stability_recent_cases.csv`
 
 ## 目录结构
 
@@ -105,7 +124,7 @@ reports/        研究与实现分析 Markdown
 - `performance hero`：最大吞吐表现最优
 - `efficiency hero`：`energy/sample` 与 `throughput/DSP` 综合表现最优
 
-当前在 ZU4EV 自研矩阵里，二者都由 `fir_pipe_systolic` 获胜。
+当前在 ZU4EV 自研矩阵里，二者都由 `fir_pipe_systolic` 获胜；在最终板级系统壳对照里，`vendor FIR IP` 以更低 LUT/FF 和略低 `energy/sample` 成为工业基线赢家。
 
 ## 当前硬件状态
 

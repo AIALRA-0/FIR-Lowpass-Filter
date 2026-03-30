@@ -41,6 +41,10 @@ wire        done;
 wire        busy;
 wire        error;
 wire [31:0] cycle_count;
+wire [31:0] debug_samples_seen;
+wire [31:0] debug_samples_emitted;
+wire [31:0] debug_input_valid_cycles;
+wire [31:0] debug_input_ready_cycles;
 
 fir_control_regs #(
     .ARCH_ID(ARCH_ID)
@@ -71,7 +75,11 @@ fir_control_regs #(
     .done(done),
     .busy(busy),
     .error(error),
-    .cycle_count(cycle_count)
+    .cycle_count(cycle_count),
+    .dbg_samples_seen(debug_samples_seen),
+    .dbg_samples_emitted(debug_samples_emitted),
+    .dbg_input_valid_cycles(debug_input_valid_cycles),
+    .dbg_input_ready_cycles(debug_input_ready_cycles)
 );
 
 fir_stream_shell #(
@@ -92,7 +100,11 @@ fir_stream_shell #(
     .done(done),
     .busy(busy),
     .error(error),
-    .cycle_count(cycle_count)
+    .cycle_count(cycle_count),
+    .debug_samples_seen(debug_samples_seen),
+    .debug_samples_emitted(debug_samples_emitted),
+    .debug_input_valid_cycles(debug_input_valid_cycles),
+    .debug_input_ready_cycles(debug_input_ready_cycles)
 );
 
 assign irq = done;

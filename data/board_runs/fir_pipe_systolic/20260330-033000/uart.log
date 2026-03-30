@@ -1,0 +1,41 @@
+FSBL is running on RPU. 
+Warning: APU-only restart is not supported if FSBL boots on RPU.
+ZU4EV FIR bare-metal harness
+stage=platform_init_begin
+stage=platform_init_done
+stage=dma_init_begin
+stage=dma_init_done
+Console=COM9, arch_id=1
+stage=impulse:case_begin len=1024
+stage=impulse:buffers_loaded
+stage=impulse:buffers_ready
+stage=impulse:ctrl_written
+stage=impulse:s2mm_started
+stage=impulse:mm2s_started
+[impulse] DMA timeout
+stage=step:case_begin len=1024
+stage=step:buffers_loaded
+stage=step:buffers_ready
+stage=step:ctrl_written
+[step] S2MM start failed
+stage=random_short:case_begin len=1024
+stage=random_short:buffers_loaded
+stage=random_short:buffers_ready
+stage=random_short:ctrl_written
+[random_short] S2MM start failed
+stage=multitone:case_begin len=2048
+stage=multitone:buffers_loaded
+stage=multitone:buffers_ready
+stage=multitone:ctrl_written
+[multitone] S2MM start failed
+stage=stopband_sine:case_begin len=1024
+stage=stopband_sine:buffers_loaded
+stage=stopband_sine:buffers_ready
+stage=stopband_sine:ctrl_written
+[stopband_sine] S2MM start failed
+stage=large_random_buffer:case_begin len=2048
+stage=large_random_buffer:buffers_loaded
+stage=large_random_buffer:buffers_ready
+stage=large_random_buffer:ctrl_written
+[large_random_buffer] S2MM start failed
+Completed 6 cases, failures=6

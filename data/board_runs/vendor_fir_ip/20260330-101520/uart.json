@@ -1,0 +1,59 @@
+{
+  "port": "COM9",
+  "baud": 115200,
+  "started_at": "2026-03-30T10:15:21",
+  "arch_id": 5,
+  "console": "COM9",
+  "cases": [
+    {
+      "name": "impulse",
+      "length": 1024,
+      "cycles": 1297641,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "step",
+      "length": 1024,
+      "cycles": 1158800,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "random_short",
+      "length": 1024,
+      "cycles": 1529150,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "multitone",
+      "length": 2048,
+      "cycles": 1391300,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "stopband_sine",
+      "length": 1024,
+      "cycles": 1575502,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "large_random_buffer",
+      "length": 2048,
+      "cycles": 1854252,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    }
+  ],
+  "summary": {
+    "case_count": 6,
+    "failures": 0
+  },
+  "passed": true,
+  "failure_class": null,
+  "failure_detail": null,
+  "completed_at": "2026-03-30T10:15:41"
+}

@@ -15,7 +15,10 @@
 - `L=2 polyphase` 已成为真正 `polyphase + symmetry` RTL
 - `L=3` 已升级为共享 `L3 FFA core` 的真实压缩并行架构，并在 ZU4EV 上达到 `381.388 MS/s`
 - `PS + PL` 系统壳已经能导出 bitstream 与 `.xsa`
-- 当前剩余主任务已经收敛为 `Vitis bare-metal harness`、板上 smoke flow 和 `vendor FIR IP` 对照
+- `fir_pipe_systolic` 与 `vendor FIR IP` 都已完成自动烧录、自动串口抓取与板上闭环
+- `vendor FIR IP` 已成为正式工业基线，当前系统壳下更省 LUT/FF 与功耗
+- 最新正式板测套件已经扩展到 `8` 个用例，包含 `passband_edge_sine` 与 `transition_sine`
+- `fir_pipe_systolic` 与 `vendor FIR IP` 都已完成最近 `3` 次正式窗口重复运行，全部 `8/8` case 通过
 
 ## 导航
 
@@ -24,10 +27,15 @@
 - [文献矩阵](literature/lit_matrix.md)
 - [阅读笔记](literature/reading_notes.md)
 - [综合总结](../reports/synth_summary.md)
+- [方法口径](../reports/methodology_summary.md)
+- [时序/功耗分析](../reports/timing_power_analysis.md)
 - [回归报告](../reports/regression_report.md)
 - [ZU4EV Bring-Up](bringup_mzu04a_zu4ev.md)
 - [系统壳状态](../reports/system_shell_status.md)
 - [JTAG 状态报告](../reports/jtag_status.md)
+- [板测报告](../reports/board_validation.md)
+- [板测稳定性](../reports/board_stability.md)
+- [Vendor 对照](../reports/vendor_vs_custom.md)
 
 ## 章节
 
@@ -43,5 +51,5 @@
 
 - `P00-P05` 研究、规格、滤波器设计、固定点和 DFG 已完成
 - `P06-P10` 标量、流水线、L=2、L=3 RTL 与统一 bit-true 回归已完成
-- `P11` ZU4EV 实现矩阵已刷新，自研五个架构均有 post-route 数据
-- 当前剩余主任务是 `vendor FIR IP` 基线、Vitis harness 联调和板上 smoke / long-run harness
+- `P11` ZU4EV 实现矩阵与 board-shell 结果都已刷新，`vendor FIR IP` 已加入最终对照
+- `P12` Pages / README / LaTeX 已同步当前 ZU4EV 主线、板测结果与 vendor 基线

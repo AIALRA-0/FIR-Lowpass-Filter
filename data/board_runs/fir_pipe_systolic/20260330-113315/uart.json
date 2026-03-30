@@ -1,0 +1,73 @@
+{
+  "port": "COM9",
+  "baud": 115200,
+  "started_at": "2026-03-30T11:33:16",
+  "arch_id": 1,
+  "console": "COM9",
+  "cases": [
+    {
+      "name": "impulse",
+      "length": 1024,
+      "cycles": 1297666,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "step",
+      "length": 1024,
+      "cycles": 1158807,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "random_short",
+      "length": 1024,
+      "cycles": 1529163,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "passband_edge_sine",
+      "length": 1024,
+      "cycles": 1806937,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "transition_sine",
+      "length": 1024,
+      "cycles": 1668059,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "multitone",
+      "length": 2048,
+      "cycles": 1391303,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "stopband_sine",
+      "length": 1024,
+      "cycles": 1575459,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    },
+    {
+      "name": "large_random_buffer",
+      "length": 2048,
+      "cycles": 1854251,
+      "mismatches": 0,
+      "status_hex": "00000001"
+    }
+  ],
+  "summary": {
+    "case_count": 8,
+    "failures": 0
+  },
+  "passed": true,
+  "failure_class": null,
+  "failure_detail": null,
+  "completed_at": "2026-03-30T11:33:36"
+}

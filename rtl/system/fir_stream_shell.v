@@ -18,6 +18,10 @@ module fir_stream_shell #(
     input  wire                        m_axis_tready,
     output wire signed [`FIR_WOUT-1:0] m_axis_tdata,
     output wire                        m_axis_tlast,
+    output wire [COUNT_WIDTH-1:0]      debug_samples_seen,
+    output wire [COUNT_WIDTH-1:0]      debug_samples_emitted,
+    output reg  [COUNT_WIDTH-1:0]      debug_input_valid_cycles,
+    output reg  [COUNT_WIDTH-1:0]      debug_input_ready_cycles,
     output reg                         done,
     output reg                         busy,
     output reg                         error,
@@ -35,11 +39,16 @@ wire [COUNT_WIDTH-1:0]         pack_seen;
 wire                           unpack_done;
 wire                           unpack_error;
 wire [COUNT_WIDTH-1:0]         unpack_emitted;
+wire                           unpack_block_ready;
 wire                           core_out_valid;
 wire signed [LANES*`FIR_WOUT-1:0] core_out_data;
+wire                           fifo_out_valid;
+wire signed [LANES*`FIR_WOUT-1:0] fifo_out_data;
+wire                           fifo_overflow;
 
 wire signed [`FIR_WOUT-1:0] out_sample_base;
 wire signed [`FIR_WOUT-1:0] out_sample_pipe;
+wire signed [`FIR_WOUT-1:0] out_sample_vendor;
 wire signed [2*`FIR_WOUT-1:0] out_vec_l2;
 wire signed [3*`FIR_WOUT-1:0] out_vec_l3;
 wire signed [3*`FIR_WOUT-1:0] out_vec_l3_pipe;
@@ -86,6 +95,16 @@ end else if (ARCH_ID == 1) begin : g_pipe
         .out_sample(out_sample_pipe)
     );
     assign core_out_data = out_sample_pipe;
+end else if (ARCH_ID == 5) begin : g_vendor
+    fir_vendor_ip_core u_core (
+        .clk(clk),
+        .rst(run_clear),
+        .in_valid(pack_valid),
+        .in_sample(pack_data[`FIR_WIN-1:0]),
+        .out_valid(core_out_valid),
+        .out_sample(out_sample_vendor)
+    );
+    assign core_out_data = out_sample_vendor;
 end else if (ARCH_ID == 2) begin : g_l2
     fir_l2_polyphase u_core (
         .clk(clk),
@@ -119,6 +138,21 @@ end else begin : g_l3_pipe
 end
 endgenerate
 
+fir_block_fifo #(
+    .WIDTH(LANES * `FIR_WOUT),
+    .DEPTH(2048)
+) u_output_fifo (
+    .clk(clk),
+    .rst(rst),
+    .clear(run_clear),
+    .in_valid(core_out_valid),
+    .in_data(core_out_data),
+    .out_valid(fifo_out_valid),
+    .out_ready(unpack_block_ready),
+    .out_data(fifo_out_data),
+    .overflow(fifo_overflow)
+);
+
 fir_block_to_scalar #(
     .WIDTH(`FIR_WOUT),
     .LANES(LANES),
@@ -129,8 +163,9 @@ fir_block_to_scalar #(
     .clear(run_clear),
     .run_enable(busy),
     .sample_count(sample_count),
-    .block_valid(core_out_valid),
-    .block_data(core_out_data),
+    .block_valid(fifo_out_valid),
+    .block_data(fifo_out_data),
+    .block_ready(unpack_block_ready),
     .m_tvalid(m_axis_tvalid),
     .m_tready(m_axis_tready),
     .m_tdata(m_axis_tdata),
@@ -140,14 +175,21 @@ fir_block_to_scalar #(
     .samples_emitted(unpack_emitted)
 );
 
+assign debug_samples_seen = pack_seen;
+assign debug_samples_emitted = unpack_emitted;
+
 always @(posedge clk) begin
     if (rst || soft_reset) begin
+        debug_input_valid_cycles <= {COUNT_WIDTH{1'b0}};
+        debug_input_ready_cycles <= {COUNT_WIDTH{1'b0}};
         done <= 1'b0;
         busy <= 1'b0;
         error <= 1'b0;
         cycle_count <= 32'd0;
     end else begin
         if (start_pulse) begin
+            debug_input_valid_cycles <= {COUNT_WIDTH{1'b0}};
+            debug_input_ready_cycles <= {COUNT_WIDTH{1'b0}};
             done <= 1'b0;
             busy <= (sample_count != 0);
             error <= 1'b0;
@@ -155,8 +197,14 @@ always @(posedge clk) begin
         end else begin
             if (busy) begin
                 cycle_count <= cycle_count + 1;
+                if (s_axis_tvalid) begin
+                    debug_input_valid_cycles <= debug_input_valid_cycles + {{(COUNT_WIDTH-1){1'b0}}, 1'b1};
+                end
+                if (s_axis_tready) begin
+                    debug_input_ready_cycles <= debug_input_ready_cycles + {{(COUNT_WIDTH-1){1'b0}}, 1'b1};
+                end
             end
-            if (pack_error || unpack_error) begin
+            if (pack_error || unpack_error || fifo_overflow) begin
                 error <= 1'b1;
             end
             if (unpack_done) begin

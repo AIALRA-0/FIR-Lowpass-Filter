@@ -1,0 +1,70 @@
+FSBL is running on RPU. 
+Warning: APU-only restart is not supported if FSBL boots on RPU.
+ZU4EV FIR bare-metal harness
+stage=platform_init_begin
+DMA buffers tx=0x00000000FFFD7D00 rx=0x00000000FFFD6D00
+stage=platform_init_done
+stage=dma_init_begin
+stage=dma_init_done
+Console=COM9, arch_id=1
+stage=impulse:case_begin len=1024
+stage=impulse:buffers_loaded
+stage=impulse:buffers_ready
+stage=impulse:ctrl_written
+stage=impulse:s2mm_started
+stage=impulse:mm2s_started
+[impulse] DMA timeout
+[impulse] dma_state@timeout mm2s_cr=0x00010002 mm2s_sr=0x00005041 s2mm_cr=0x00010002 s2mm_sr=0x00001001
+[impulse] shell_state@timeout status=0x00000006 cycles=2670044343 seen=805 emitted=671 svalid=805 sready=2670044499
+[impulse] dma_state@after_reset mm2s_cr=0x00010002 mm2s_sr=0x00000001 s2mm_cr=0x00010002 s2mm_sr=0x00000001
+stage=step:case_begin len=1024
+stage=step:buffers_loaded
+stage=step:buffers_ready
+stage=step:ctrl_written
+stage=step:s2mm_started
+stage=step:mm2s_started
+[step] DMA timeout
+[step] dma_state@timeout mm2s_cr=0x00010002 mm2s_sr=0x00005041 s2mm_cr=0x00010002 s2mm_sr=0x00001001
+[step] shell_state@timeout status=0x00000006 cycles=2669697137 seen=805 emitted=671 svalid=805 sready=2669697293
+[step] dma_state@after_reset mm2s_cr=0x00010002 mm2s_sr=0x00000001 s2mm_cr=0x00010002 s2mm_sr=0x00000001
+stage=random_short:case_begin len=1024
+stage=random_short:buffers_loaded
+stage=random_short:buffers_ready
+stage=random_short:ctrl_written
+stage=random_short:s2mm_started
+stage=random_short:mm2s_started
+[random_short] DMA timeout
+[random_short] dma_state@timeout mm2s_cr=0x00010002 mm2s_sr=0x00005041 s2mm_cr=0x00010002 s2mm_sr=0x00001001
+[random_short] shell_state@timeout status=0x00000006 cycles=2670622997 seen=805 emitted=671 svalid=805 sready=2670623153
+[random_short] dma_state@after_reset mm2s_cr=0x00010002 mm2s_sr=0x00000001 s2mm_cr=0x00010002 s2mm_sr=0x00000001
+stage=multitone:case_begin len=2048
+stage=multitone:buffers_loaded
+stage=multitone:buffers_ready
+stage=multitone:ctrl_written
+stage=multitone:s2mm_started
+stage=multitone:mm2s_started
+[multitone] DMA timeout
+[multitone] dma_state@timeout mm2s_cr=0x00010002 mm2s_sr=0x00005041 s2mm_cr=0x00010002 s2mm_sr=0x00001001
+[multitone] shell_state@timeout status=0x00000006 cycles=2670275785 seen=1829 emitted=1695 svalid=1829 sready=2670275941
+[multitone] dma_state@after_reset mm2s_cr=0x00010002 mm2s_sr=0x00000001 s2mm_cr=0x00010002 s2mm_sr=0x00000001
+stage=stopband_sine:case_begin len=1024
+stage=stopband_sine:buffers_loaded
+stage=stopband_sine:buffers_ready
+stage=stopband_sine:ctrl_written
+stage=stopband_sine:s2mm_started
+stage=stopband_sine:mm2s_started
+[stopband_sine] DMA timeout
+[stopband_sine] dma_state@timeout mm2s_cr=0x00010002 mm2s_sr=0x00005041 s2mm_cr=0x00010002 s2mm_sr=0x00001001
+[stopband_sine] shell_state@timeout status=0x00000006 cycles=2670738689 seen=805 emitted=671 svalid=805 sready=2670738845
+[stopband_sine] dma_state@after_reset mm2s_cr=0x00010002 mm2s_sr=0x00000001 s2mm_cr=0x00010002 s2mm_sr=0x00000001
+stage=large_random_buffer:case_begin len=2048
+stage=large_random_buffer:buffers_loaded
+stage=large_random_buffer:buffers_ready
+stage=large_random_buffer:ctrl_written
+stage=large_random_buffer:s2mm_started
+stage=large_random_buffer:mm2s_started
+[large_random_buffer] DMA timeout
+[large_random_buffer] dma_state@timeout mm2s_cr=0x00010002 mm2s_sr=0x00005041 s2mm_cr=0x00010002 s2mm_sr=0x00001001
+[large_random_buffer] shell_state@timeout status=0x00000006 cycles=2671433151 seen=1829 emitted=1695 svalid=1829 sready=2671433307
+[large_random_buffer] dma_state@after_reset mm2s_cr=0x00010002 mm2s_sr=0x00000001 s2mm_cr=0x00010002 s2mm_sr=0x00000001
+Completed 6 cases, failures=6

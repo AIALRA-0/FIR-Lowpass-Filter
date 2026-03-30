@@ -1,0 +1,64 @@
+FSBL is running on RPU. 
+Warning: APU-only restart is not supported if FSBL boots on RPU.
+ZU4EV FIR bare-metal harness
+stage=platform_init_begin
+DMA buffers tx=0x00000000FFFD7D00 rx=0x00000000FFFD6D00
+stage=platform_init_done
+stage=dma_init_begin
+stage=dma_init_done
+Console=COM9, arch_id=1
+stage=impulse:case_begin len=1024
+stage=impulse:buffers_loaded
+stage=impulse:buffers_ready
+stage=impulse:ctrl_written
+stage=impulse:s2mm_started
+stage=impulse:mm2s_started
+stage=impulse:dma_idle
+stage=impulse:core_done
+[impulse] len=1024 cycles=1297649 mismatches=0 status=0x00000001
+stage=step:case_begin len=1024
+stage=step:buffers_loaded
+stage=step:buffers_ready
+stage=step:ctrl_written
+stage=step:s2mm_started
+stage=step:mm2s_started
+stage=step:dma_idle
+stage=step:core_done
+[step] len=1024 cycles=1158847 mismatches=0 status=0x00000001
+stage=random_short:case_begin len=1024
+stage=random_short:buffers_loaded
+stage=random_short:buffers_ready
+stage=random_short:ctrl_written
+stage=random_short:s2mm_started
+stage=random_short:mm2s_started
+stage=random_short:dma_idle
+stage=random_short:core_done
+[random_short] len=1024 cycles=1529183 mismatches=0 status=0x00000001
+stage=multitone:case_begin len=2048
+stage=multitone:buffers_loaded
+stage=multitone:buffers_ready
+stage=multitone:ctrl_written
+stage=multitone:s2mm_started
+stage=multitone:mm2s_started
+stage=multitone:dma_idle
+stage=multitone:core_done
+[multitone] len=2048 cycles=1391309 mismatches=0 status=0x00000001
+stage=stopband_sine:case_begin len=1024
+stage=stopband_sine:buffers_loaded
+stage=stopband_sine:buffers_ready
+stage=stopband_sine:ctrl_written
+stage=stopband_sine:s2mm_started
+stage=stopband_sine:mm2s_started
+stage=stopband_sine:dma_idle
+stage=stopband_sine:core_done
+[stopband_sine] len=1024 cycles=1575473 mismatches=0 status=0x00000001
+stage=large_random_buffer:case_begin len=2048
+stage=large_random_buffer:buffers_loaded
+stage=large_random_buffer:buffers_ready
+stage=large_random_buffer:ctrl_written
+stage=large_random_buffer:s2mm_started
+stage=large_random_buffer:mm2s_started
+stage=large_random_buffer:dma_idle
+stage=large_random_buffer:core_done
+[large_random_buffer] len=2048 cycles=1854233 mismatches=0 status=0x00000001
+Completed 6 cases, failures=0

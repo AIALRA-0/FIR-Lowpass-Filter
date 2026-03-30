@@ -2,3 +2,22 @@
 
 本章对比浮点与固定点滤波器的频率响应，分析系数量化、内部溢出风险和输出舍入策略的影响。
 
+当前项目没有把 ``100 taps'' 直接当成最终答案，而是保留了 \texttt{baseline\_taps100} 与 \texttt{baseline\_order100} 两条基线。两者在 \texttt{firpm} 下都只能得到约 \texttt{40 dB} 量级的阻带衰减，因此真正满足 \texttt{Ast >= 80 dB} 的最终方案被提升到 \texttt{order = 260 / 261 taps}。这一步很重要，因为它说明当前难点并不只是系数量化，而是浮点设计本身必须先有足够 stopband 裕量。
+
+固定点扫描表明，当前默认 \texttt{Wout = 16} 时，\texttt{Wcoef = 20} 是第一个稳定跨过 \texttt{80 dB} 阻带门槛的点：\texttt{Wcoef = 16} 仅约 \texttt{67.7 dB}，\texttt{Wcoef = 18} 约 \texttt{77.2 dB}，而 \texttt{Wcoef = 20} 达到 \texttt{81.3994 dB}。继续增大到 \texttt{22} 或 \texttt{24} bit 虽然还能略微改善阻带，但收益已经明显边际化，因此本项目最终定案为 \texttt{Q1.15 + Wcoef20 + Wout16 + Wacc46}。
+
+内部位宽采用保守公式
+\[
+W_{\mathrm{acc}} = W_{\mathrm{in}} + W_{\mathrm{coef}} + \lceil \log_2 N_{\mathrm{uniq}} \rceil + 2
+\]
+对当前 \texttt{261 taps}、对称折叠后 \texttt{N\_uniq = 131} 的设计，有
+\[
+W_{\mathrm{acc}} = 16 + 20 + \lceil \log_2 131 \rceil + 2 = 46 .
+\]
+利用量化后系数绝对值和可得保守整数域上界
+\[
+|y|_{\max} \le |x|_{\max} \sum_k |h_q[k]| = 32767 \times 1{,}153{,}458 = 37{,}795{,}358{,}286 ,
+\]
+该上界只需要 \texttt{37} 个带符号位宽即可容纳，而当前 \texttt{46-bit} 累加器仍保留了 \texttt{9-bit} headroom。实际扫描观测到的 \texttt{max\_abs\_acc} 更低，因此当前 \texttt{overflow\_count = 0} 并不是偶然，而是有位宽依据支撑的。
+
+实现上，本项目坚持内部 full precision accumulate，仅在最终输出边界执行统一的 \texttt{round-to-nearest + saturate}。这样做的价值在于：黄金向量、RTL、vendor 基线和板上 bare-metal harness 全部共享同一条末级量化规则，从而保持真正的 bit-true 比较口径。

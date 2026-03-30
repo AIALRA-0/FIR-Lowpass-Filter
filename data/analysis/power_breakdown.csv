@@ -1,0 +1,3 @@
+top,architecture,scope,power_total_w,power_dynamic_w,power_static_w,clock_power_w,clb_logic_power_w,signals_power_w,bram_power_w,dsp_power_w,ps8_power_w,ps_static_w,pl_static_w,hier_ps_w,hier_fir_shell_w,hier_dma_w,hier_ctrl_w,hier_data_ic_w,confidence_level
+zu4ev_fir_pipe_systolic_top,board_shell_custom,board_shell,2.971,2.516,0.455,0.18,0.05,0.019,0.003,0.035,2.228,0.105,0.35,2.231,0.238,0.016,0.022,0.009,Medium
+zu4ev_fir_vendor_top,board_shell_vendor_ip,board_shell,2.861,2.408,0.454,0.094,0.03,0.017,0.003,0.035,2.228,0.105,0.349,2.231,0.132,0.014,0.022,0.008,Medium

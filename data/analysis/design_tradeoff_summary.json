@@ -1,0 +1,32 @@
+{
+  "baseline_taps100_best_firpm": {
+    "design_id": "baseline_taps100__firpm__n99__ap0.010",
+    "design_group": "baseline_taps100",
+    "method": "firpm",
+    "order": 99,
+    "taps": 100,
+    "ap_db": 0.9920314915529,
+    "ast_db": 40.000061165892,
+    "meets_spec": 0
+  },
+  "baseline_order100_best_firpm": {
+    "design_id": "baseline_order100__firpm__n100__ap0.010",
+    "design_group": "baseline_order100",
+    "method": "firpm",
+    "order": 100,
+    "taps": 101,
+    "ap_db": 0.962069347771534,
+    "ast_db": 40.2591021651833,
+    "meets_spec": 0
+  },
+  "final_spec_selected": {
+    "design_id": "final_spec__firpm__n260__ap0.050",
+    "design_group": "final_spec",
+    "method": "firpm",
+    "order": 260,
+    "taps": 261,
+    "ap_db": 0.0303662785426169,
+    "ast_db": 83.9902276701797,
+    "meets_spec": 1
+  }
+}

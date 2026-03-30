@@ -15,8 +15,8 @@
 | P08 | `L=2` polyphase | 完成 | 已替换参考内核为真正 `polyphase + symmetry` RTL，并通过向量回归与 Vivado 实现 |
 | P09 | `L=3` polyphase / `L=3 + pipeline` | 完成 | 已实现共享 `L3 FFA core`，两个版本均通过 bit-true 回归并完成 ZU4EV post-route |
 | P10 | 统一验证链 | 完成 | 标量与向量最小回归链已打通，`impulse / step / random_short / lane_alignment` 可一键运行 |
-| P11 | Vivado 综合 / 实现 | 进行中 | ZU4EV 自研五个架构结果已刷新；`zu4ev_fir_pipe_systolic_top` 已导出 `.xsa`；`vendor FIR IP` 仍待纳入总表 |
-| P12 | Pages / LaTeX / Overleaf | 进行中 | 文档骨架已建立，当前正在同步 ZU4EV 主线、系统壳与上板流程 |
+| P11 | Vivado 综合 / 实现 | 完成 | 自研五个 RTL 架构 + 两条 board-shell 结果已汇总；`vendor FIR IP` 已纳入最终对照 |
+| P12 | Pages / LaTeX / Overleaf | 完成 | README、Pages、Markdown 报告与 LaTeX 已同步当前 ZU4EV 主线、板测结果与 vendor 基线 |
 
 ## 当前默认环境
 
@@ -38,7 +38,14 @@
 - 向量回归：`fir_l2_polyphase` / `fir_l3_polyphase` / `fir_l3_pipe` 已通过 `impulse`、`step`、`random_short`、`lane_alignment`
 - `fir_l3_polyphase`：`WNS = -4.533 ns`，`Fmax = 127.129 MHz`，`throughput = 381.388 MS/s`，`34687 LUT`，`175 DSP`
 - `fir_l3_pipe`：`WNS = -4.925 ns`，`Fmax = 121.095 MHz`，`throughput = 363.284 MS/s`，`34786 LUT`，`175 DSP`
-- 系统壳：`build/zu4ev_system/zu4ev_fir_pipe_systolic_top/zu4ev_fir_pipe_systolic_top.xsa` 已导出
+- board-shell：`zu4ev_fir_pipe_systolic_top` = `347.826 MHz`，`20253 LUT`，`21909 FF`，`132 DSP`
+- board-shell：`zu4ev_fir_vendor_top` = `347.102 MHz`，`8856 LUT`，`13428 FF`，`131 DSP`
+- 板测闭环：
+  - `fir_pipe_systolic`：`data/board_runs/fir_pipe_systolic/20260330-113630`
+  - `vendor_fir_ip`：`data/board_runs/vendor_fir_ip/20260330-113805`
+  - 汇总：`data/board_results.csv`
+  - 两条架构均完成 `8` 个板上用例，`mismatches = 0`
+  - 最近 `3` 次正式窗口稳定性：`data/analysis/board_stability_recent_arch.csv`
 
 ## 当前结论
 
@@ -46,5 +53,6 @@
 - `fir_l2_polyphase` 证明了真正 polyphase datapath 已进入可综合、可回归、可在大器件上公平比较的状态
 - `fir_l3_polyphase` 和 `fir_l3_pipe` 已不再受 7020 面积限制，当前结论变成：`L3` 吞吐很强，但仍未打赢高质量标量流水线
 - `L3` 当前主问题不是“能不能放下”，而是“如何把 `DSP48E2` 友好的高性能版本做成真正的第二名候选”
-- JTAG 链路已经从“驱动排障”阶段进入“系统 bring-up”阶段，当前能够枚举到 `xczu4` 与 `arm_dap`，详见 `docs/bringup_mzu04a_zu4ev.md`
-- 系统级主线已经从“只有 RTL 内核”进入“可导出 Vitis 平台”的阶段，下一步是把 `vitis/zu4ev_baremetal` 与该 `.xsa` 真正联调起来
+- `vendor FIR IP` 已在相同 ZU4EV 系统壳下通过自动烧录与板测，当前成为正式工业基线
+- 在 `board-shell scope` 下，vendor 以更低 LUT/FF 和略低 `energy/sample` 领先；在自研 RTL 矩阵中，`fir_pipe_systolic` 仍是最强研究型实现
+- 当前分析层已补齐方法口径、功耗分层、关键路径分解、位宽推导和最近窗口稳定性统计

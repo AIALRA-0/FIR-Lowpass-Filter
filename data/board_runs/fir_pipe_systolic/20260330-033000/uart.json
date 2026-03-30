@@ -1,0 +1,16 @@
+{
+  "port": "COM9",
+  "baud": 115200,
+  "started_at": "2026-03-30T03:30:00",
+  "arch_id": 1,
+  "console": "COM9",
+  "cases": [],
+  "summary": {
+    "case_count": 6,
+    "failures": 6
+  },
+  "passed": false,
+  "failure_class": "functional_failure",
+  "failure_detail": "Non-zero failures, mismatches, or error status observed",
+  "completed_at": "2026-03-30T03:30:30"
+}

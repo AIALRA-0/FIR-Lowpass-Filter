@@ -4,3 +4,5 @@ fir_pipe_systolic,pipelined_systolic,xczu4ev-sfvc784-2-i,261,1,131,3.333,1.156,0
 fir_l2_polyphase,l2_polyphase,xczu4ev-sfvc784-2-i,261,2,1,3.333,-3.844,-632.534,139.334,278.668,5868,2439,262,0.0,1.328,0.98,0.349,4.765528,build/vivado/fir_l2_polyphase
 fir_l3_polyphase,l3_polyphase,xczu4ev-sfvc784-2-i,261,3,1,3.333,-4.533,-911.886,127.129,381.388,34687,6914,175,0.0,3.484,3.114,0.369,9.135048,build/vivado/fir_l3_polyphase
 fir_l3_pipe,l3_pipeline,xczu4ev-sfvc784-2-i,261,3,3,3.333,-4.925,-999.59,121.095,363.284,34786,7199,175,0.0,3.545,3.175,0.37,9.758203,build/vivado/fir_l3_pipe
+zu4ev_fir_pipe_systolic_top,board_shell_custom,xczu4ev-sfvc784-2-i,261,1,131,3.333,0.458,0.0,347.826,347.826,20253,21909,132,3.0,2.971,2.516,0.455,8.541625,build/zu4ev_system/zu4ev_fir_pipe_systolic_top/zu4ev_fir_pipe_systolic_top.runs/impl_1
+zu4ev_fir_vendor_top,board_shell_vendor_ip,xczu4ev-sfvc784-2-i,261,1,131,3.333,0.452,0.0,347.102,347.102,8856,13428,131,3.0,2.861,2.408,0.454,8.242541,build/zu4ev_system/zu4ev_fir_vendor_top/zu4ev_fir_vendor_top.runs/impl_1

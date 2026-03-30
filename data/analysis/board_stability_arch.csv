@@ -1,0 +1,3 @@
+arch,total_runs,passed_runs,pass_rate_pct,summary_failures_total,latest_run_id
+fir_pipe_systolic,28,5,17.857,30,20260330-113630
+vendor_fir_ip,5,5,100.0,0,20260330-113805

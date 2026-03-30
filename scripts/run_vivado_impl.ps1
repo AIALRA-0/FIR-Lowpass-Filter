@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('fir_symm_base', 'fir_pipe_systolic', 'fir_l2_polyphase', 'fir_l3_polyphase', 'fir_l3_pipe', 'all')]
+    [ValidateSet('fir_symm_base', 'fir_pipe_systolic', 'fir_l2_polyphase', 'fir_l3_polyphase', 'fir_l3_pipe', 'fir_vendor_ip_core', 'all')]
     [string]$Top = 'all',
     [string]$TargetPart = '',
     [double]$TargetPeriodNs = 0.0
@@ -45,13 +45,17 @@ if (Test-Path $stageRoot) {
 New-Item -ItemType Directory -Force -Path $stageRoot | Out-Null
 Copy-Item (Join-Path $repo 'rtl') (Join-Path $stageRoot 'rtl') -Recurse -Force
 Copy-Item (Join-Path $repo 'vivado') (Join-Path $stageRoot 'vivado') -Recurse -Force
+Copy-Item (Join-Path $repo 'coeffs') (Join-Path $stageRoot 'coeffs') -Recurse -Force
 
-$scriptPath = Join-Path $stageRoot 'vivado/tcl/synth_one.tcl'
 $repoBuild = Join-Path $repo 'build/vivado'
 New-Item -ItemType Directory -Force -Path $repoBuild | Out-Null
 $failures = @()
 
 foreach ($topName in $tops) {
+    if ($topName -eq 'fir_vendor_ip_core') {
+        Write-Warning 'Standalone fir_vendor_ip_core implementation is not part of the default closure path. Use run_zu4ev_closure.ps1 to refresh the vendor board-shell baseline.'
+        continue
+    }
     Write-Host "=== Running staged Vivado implementation for $topName on $TargetPart @ ${TargetPeriodNs}ns ==="
     $env:TOP = $topName
     $env:FIR_REPO_ROOT = $stageRoot
@@ -61,6 +65,11 @@ foreach ($topName in $tops) {
     New-Item -ItemType Directory -Force -Path $stageBuild | Out-Null
     $logPath = Join-Path $stageBuild 'vivado.log'
     $jouPath = Join-Path $stageBuild 'vivado.jou'
+    $scriptPath = if ($topName -eq 'fir_vendor_ip_core') {
+        Join-Path $stageRoot 'vivado/tcl/zu4ev/build_vendor_fir_core.tcl'
+    } else {
+        Join-Path $stageRoot 'vivado/tcl/synth_one.tcl'
+    }
     & $vivado -mode batch -source $scriptPath -log $logPath -journal $jouPath
     $repoTopBuild = Join-Path $repoBuild $topName
     if (Test-Path $repoTopBuild) {

@@ -1,0 +1,3 @@
+FSBL is running on RPU. 
+Warning: APU-only restart is not supported if FSBL boots on RPU.
+ZU4EV FIR bare-metal harness

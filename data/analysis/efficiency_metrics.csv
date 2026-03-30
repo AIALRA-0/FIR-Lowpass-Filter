@@ -1,0 +1,8 @@
+top,architecture,scope,samples_per_cycle,latency_cycles,fmax_mhz_est,throughput_msps_est,lut,dsp,power_total_w,energy_per_sample_nj_est,throughput_per_dsp_msps,throughput_per_klut_msps,throughput_per_w_msps
+fir_symm_base,symmetry_folded,kernel,1,1,127.065,127.065,2810,126,0.88,6.9256,1.008452,45.218861,144.392045
+fir_pipe_systolic,pipelined_systolic,kernel,1,131,459.348,459.348,16712,132,1.747,3.803219,3.479909,27.486118,262.935318
+fir_l2_polyphase,l2_polyphase,kernel,2,1,139.334,278.668,5868,262,1.328,4.765528,1.063618,47.489434,209.840361
+fir_l3_polyphase,l3_polyphase,kernel,3,1,127.129,381.388,34687,175,3.484,9.135048,2.17936,10.995128,109.468427
+fir_l3_pipe,l3_pipeline,kernel,3,3,121.095,363.284,34786,175,3.545,9.758203,2.075909,10.443397,102.477856
+zu4ev_fir_pipe_systolic_top,board_shell_custom,board_shell,1,131,347.826,347.826,20253,132,2.971,8.541625,2.635045,17.174048,117.073713
+zu4ev_fir_vendor_top,board_shell_vendor_ip,board_shell,1,131,347.102,347.102,8856,131,2.861,8.242541,2.649634,39.193993,121.321915

@@ -12,6 +12,7 @@ module fir_block_to_scalar #(
     input  wire [COUNT_WIDTH-1:0]        sample_count,
     input  wire                          block_valid,
     input  wire signed [LANES*WIDTH-1:0] block_data,
+    output wire                          block_ready,
     output wire                          m_tvalid,
     input  wire                          m_tready,
     output wire signed [WIDTH-1:0]       m_tdata,
@@ -39,6 +40,7 @@ assign out_fire = m_tvalid && m_tready;
 assign m_tlast = holding && ((samples_emitted + {{(COUNT_WIDTH-1){1'b0}}, 1'b1}) == sample_count);
 assign finishing_current = out_fire && (hold_index + 1 == hold_valid_lanes);
 assign can_accept_block = !holding || finishing_current;
+assign block_ready = can_accept_block;
 assign remaining_for_new_block = sample_count - samples_assigned;
 assign next_valid_lanes = (remaining_for_new_block > LANES) ? LANES : remaining_for_new_block[31:0];
 

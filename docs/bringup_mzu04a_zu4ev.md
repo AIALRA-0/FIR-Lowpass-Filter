@@ -72,10 +72,24 @@ powershell -ExecutionPolicy Bypass -File scripts/check_jtag_stack.ps1
 
 - RTL 内核级 bit-true 回归已通过
 - ZU4EV 上的五个自研架构均已有 post-route 数据
-- 当前未完成的是：
-  - `vendor FIR IP` 参考线
-  - `.xsa` 导出与 Vitis 工程联调
-  - 板上 smoke / long-run 结果正式入库
+- `fir_pipe_systolic` 与 `vendor FIR IP` 均已完成自动烧录、自动串口抓取与板上验证
+- 当前板上正式通过的用例为：
+  - `impulse`
+  - `step`
+  - `random_short`
+  - `multitone`
+  - `stopband_sine`
+  - `large_random_buffer`
+- 当前板测结果均满足：
+  - `mismatches = 0`
+  - `failures = 0`
+
+## 自动化入口
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run_zu4ev_closure.ps1 -Arch fir_pipe_systolic -ForceHardwareBuild -ForceAppBuild -MaxAttempts 1
+powershell -ExecutionPolicy Bypass -File scripts/run_zu4ev_closure.ps1 -Arch vendor_fir_ip -ForceHardwareBuild -ForceAppBuild -MaxAttempts 1
+```
 
 ## 常见问题定位
 

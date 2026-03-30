@@ -1,0 +1,3 @@
+arch,expected_case_count,window_runs,all_passed,run_ids
+fir_pipe_systolic,8,3,True,"20260330-112958,20260330-113315,20260330-113630"
+vendor_fir_ip,8,3,True,"20260330-113137,20260330-113453,20260330-113805"

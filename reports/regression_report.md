@@ -12,6 +12,8 @@
 - `fir_l2_polyphase` 向量 bit-true：已闭环
 - `fir_l3_polyphase` 向量 bit-true：已闭环
 - `fir_l3_pipe` 向量 bit-true：已闭环
+- `fir_pipe_systolic` 板上自动闭环：已闭环
+- `vendor FIR IP` 板上自动闭环：已闭环
 - 已验证回归用例：`impulse`、`step`、`random_short(1024-sample prefix)`、`lane_alignment`、`passband_edge`、`transition`、`stopband`、`multitone`、`overflow_corner`
 
 ## 说明
@@ -54,8 +56,33 @@
 - `scripts/run_vector_regression.ps1` 已支持 `passband_edge / transition / stopband / multitone / overflow_corner`，但仓库里尚无“一次性跑完整矩阵并汇总成表”的单命令包装
 - `fir_l3_pipe` 与 `fir_l3_polyphase` 在仿真上完全一致，仅延迟不同；当前实现差异主要体现在寄存器数量与实际 Fmax，而不是数值路径
 
+## 板级闭环
+
+- `scripts/run_zu4ev_closure.ps1` 已经可以完成：
+  - bitstream / `.xsa` 刷新
+  - XSCT 下载 bitstream + ELF
+  - `COM9` 串口自动抓取
+  - PASS/FAIL 自动判定
+  - `data/board_results.csv` 自动刷新
+- 最新通过的板测运行：
+  - `fir_pipe_systolic`：`data/board_runs/fir_pipe_systolic/20260330-103046`
+  - `vendor_fir_ip`：`data/board_runs/vendor_fir_ip/20260330-103107`
+  - 汇总：`data/board_results.csv`
+- 两条架构都通过了：
+  - `impulse`
+  - `step`
+  - `random_short`
+  - `passband_edge_sine`
+  - `transition_sine`
+  - `multitone`
+  - `stopband_sine`
+  - `large_random_buffer`
+- 两条架构当前板测结果都是：
+  - `mismatches = 0`
+  - `failures = 0`
+
 ## 当前下一优先级
 
 - 为完整回归矩阵补一个统一汇总脚本，把 PASS/FAIL、latency、最大误差直接写成表
-- 将 `vendor FIR IP` 纳入同一条 bit-true / latency 对齐检查链
-- 继续优化 `L=3` 时序，把当前约 `52 MHz` 推到至少 `102.344 MHz`
+- 若后续继续研究并行结构，优先优化 `L=3` 的 DSP48E2 深流水线版本
+- 若后续继续展示增强，可考虑把 ILA、DAQ 或示波器测量作为非主线扩展
