@@ -1,6 +1,7 @@
 {
   "matlab_bin": "E:/MATLAB/R2024b/bin/matlab.exe",
-  "vivado_bin": "C:/Xilinx/Vivado/2024.1/bin/vivado.bat",
-  "target_part": "xc7z020clg400-2"
+  "vivado_bin": "E:/Xilinx/Vivado/2024.1/bin/vivado.bat",
+  "vitis_bin": "E:/Xilinx/Vitis/2024.1/bin/vitis.bat",
+  "xsct_bin": "E:/Xilinx/Vitis/2024.1/bin/xsct.bat",
+  "target_part": "xczu4ev-sfvc784-2-i"
 }
-

@@ -22,17 +22,30 @@ TOP_META = {
 
 def parse_utilization(report_path: Path):
     text = report_path.read_text(encoding="utf-8", errors="ignore")
-    lut = int(re.search(r"\|\s*Slice LUTs\s*\|\s*(\d+)", text).group(1))
-    ff = int(re.search(r"\|\s*Slice Registers\s*\|\s*(\d+)", text).group(1))
-    dsp = int(re.search(r"\|\s*DSPs\s*\|\s*(\d+)", text).group(1))
+    lut_match = re.search(r"\|\s*(?:Slice LUTs|CLB LUTs)\s*\|\s*(\d+)", text)
+    ff_match = re.search(r"\|\s*(?:Slice Registers|CLB Registers)\s*\|\s*(\d+)", text)
+    dsp_match = re.search(r"\|\s*DSPs\s*\|\s*(\d+)", text)
+    if lut_match is None or ff_match is None or dsp_match is None:
+        raise RuntimeError(f"Failed to parse utilization report: {report_path}")
+    lut = int(lut_match.group(1))
+    ff = int(ff_match.group(1))
+    dsp = int(dsp_match.group(1))
     bram_match = re.search(r"\|\s*Block RAM Tile\s*\|\s*([\d\.]+)", text)
     bram = float(bram_match.group(1)) if bram_match else 0.0
     return lut, ff, dsp, bram
 
 
-def parse_timing(report_path: Path):
+def parse_impl_summary(summary_path: Path):
+    data = {}
+    for line in summary_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        if "=" in line:
+            key, value = line.split("=", 1)
+            data[key.strip()] = value.strip()
+    return data
+
+
+def parse_timing(report_path: Path, target_period: float):
     lines = report_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-    target_period = 5.0
     wns = None
     tns = None
     for idx, line in enumerate(lines):
@@ -53,7 +66,10 @@ def parse_power(report_path: Path):
     text = report_path.read_text(encoding="utf-8", errors="ignore")
     total = float(re.search(r"Total On-Chip Power \(W\)\s*\|\s*([\d\.]+)", text).group(1))
     dynamic = float(re.search(r"Dynamic \(W\)\s*\|\s*([\d\.]+)", text).group(1))
-    static = float(re.search(r"Static Power\s*\|\s*([\d\.]+)", text).group(1))
+    static_match = re.search(r"(?:Static Power|Device Static)\s*\|\s*([\d\.]+)", text)
+    if static_match is None:
+        raise RuntimeError(f"Failed to parse static power from {report_path}")
+    static = float(static_match.group(1))
     return total, dynamic, static
 
 
@@ -62,11 +78,14 @@ def collect_row(top_name: str):
     util = build_dir / "utilization.rpt"
     timing = build_dir / "timing_summary.rpt"
     power = build_dir / "power.rpt"
-    if not (util.exists() and timing.exists() and power.exists()):
+    summary = build_dir / "impl_summary.txt"
+    if not (util.exists() and timing.exists() and power.exists() and summary.exists()):
         return None
 
+    impl_summary = parse_impl_summary(summary)
+    target_period = float(impl_summary.get("target_period_ns", SPEC.get("target_target_period_ns", 3.333)))
     lut, ff, dsp, bram = parse_utilization(util)
-    target_period, wns, tns, fmax_mhz = parse_timing(timing)
+    target_period, wns, tns, fmax_mhz = parse_timing(timing, target_period)
     power_total, power_dynamic, power_static = parse_power(power)
     meta = TOP_META[top_name]
     throughput_msps = meta["samples_per_cycle"] * fmax_mhz

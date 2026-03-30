@@ -1,15 +1,38 @@
+set ::fir_common_script_dir [file normalize [file dirname [info script]]]
+
+proc fir_find_repo_root {start_dir} {
+    set probe [file normalize $start_dir]
+    while {1} {
+        if {[file exists [file join $probe spec spec.json]] && [file exists [file join $probe rtl common fir_params.vh]]} {
+            return $probe
+        }
+        set parent [file dirname $probe]
+        if {$parent eq $probe} {
+            error "Could not locate FIR repo root from $start_dir"
+        }
+        set probe $parent
+    }
+}
+
 proc fir_repo_root {} {
     if {[info exists ::env(FIR_REPO_ROOT)] && $::env(FIR_REPO_ROOT) ne ""} {
         return [file normalize $::env(FIR_REPO_ROOT)]
     }
-    return [file normalize [file join [file dirname [info script]] .. ..]]
+    return [fir_find_repo_root $::fir_common_script_dir]
 }
 
 proc fir_target_part {} {
     if {[info exists ::env(TARGET_PART)] && $::env(TARGET_PART) ne ""} {
         return $::env(TARGET_PART)
     }
-    return "xc7z020clg400-2"
+    return "xczu4ev-sfvc784-2-i"
+}
+
+proc fir_target_period_ns {} {
+    if {[info exists ::env(TARGET_PERIOD_NS)] && $::env(TARGET_PERIOD_NS) ne ""} {
+        return $::env(TARGET_PERIOD_NS)
+    }
+    return "3.333"
 }
 
 proc fir_build_dir {top_name} {

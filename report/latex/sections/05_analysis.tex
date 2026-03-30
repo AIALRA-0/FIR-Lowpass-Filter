@@ -2,3 +2,6 @@
 
 本章总结各架构的性能、效率和适用场景，给出本项目的 \textit{performance hero} 与 \textit{efficiency hero}。
 
+在当前 ZU4EV 主线下，\textit{performance hero} 与 \textit{efficiency hero} 都由 \texttt{fir\_pipe\_systolic} 获得。它不仅取得最高吞吐，而且是当前唯一在 \texttt{3.333 ns} 目标周期下闭合时序的自研架构。这说明对于本项目这一类 261 taps、线性相位、严格 bit-true 的 FIR 设计，高质量的对称折叠加 systolic 流水线仍然是非常强的工程解。
+
+\texttt{L=2} 与 \texttt{L=3} 的研究价值依然成立。\texttt{L=2} 展示了真正 polyphase + symmetry 结构如何进入统一验证和实现链；\texttt{L=3} 则证明共享 \texttt{L3 FFA core} 的压缩路线在 ZU4EV 上已经具备可展示的高吞吐潜力。下一阶段的重点不再是让并行架构“放得下”，而是完成两件系统级工作：其一，把 \texttt{PS + PL + Bare-metal Vitis} 烟测流程真正联调完成；其二，引入 \texttt{vendor FIR IP} 参考线，形成最终的工业基线对照。

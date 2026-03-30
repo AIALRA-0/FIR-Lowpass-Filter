@@ -1,6 +1,13 @@
 ﻿# JTAG Status
 
-Checked at: 2026-03-29T21:16:24
+Checked at: 2026-03-29T23:13:40
+
+## Active Platform
+
+- board_name: MZU04A-4EV
+- target_part: xczu4ev-sfvc784-2-i
+- uart_console: COM9
+- jtag_boot_switch: ON / ON / ON
 
 ## Toolchain
 
@@ -10,9 +17,8 @@ Checked at: 2026-03-29T21:16:24
 
 ## Present USB Devices
 
-- USB Serial Converter | class=USB | provider=FTDI | inf=oem104.inf | service=FTDIBUS | instance=USB\VID_0403&PID_6014\210512180081
+- Silicon Labs CP210x USB to UART Bridge (COM9) | class=Ports | provider=Silicon Laboratories Inc. | inf=oem195.inf | service=silabser | instance=USB\VID_10C4&PID_EA60\0244B448
 - USB Serial Converter | class=USB | provider=FTDI | inf=oem104.inf | service=FTDIBUS | instance=USB\VID_0403&PID_6014\210299BBCF40
-- USB-SERIAL CH340 (COM7) | class=Ports | provider=wch.cn | inf=oem187.inf | service=CH341SER_A64 | instance=USB\VID_1A86&PID_7523\5&27EC4662&0&10
 
 ## Installed Driver Hints
 
@@ -49,22 +55,26 @@ Checked at: 2026-03-29T21:16:24
 ## hw_server Probe
 
 - server_url: localhost:3121
-- target_count: 2
+- target_count: 1
 
-- localhost:3121/xilinx_tcf/Digilent/210299BBCF40 | open_rc=1 | device_count=0 | message=ERROR: [Common 17-39] 'open_hw_target' failed due to earlier errors. 
-- localhost:3121/xilinx_tcf/Digilent/210512180081 | open_rc=1 | device_count=0 | message=ERROR: [Common 17-39] 'open_hw_target' failed due to earlier errors. 
+- localhost:3121/xilinx_tcf/Digilent/210299BBCF40 | open_rc=0 | device_count=2 | message=
+
+## Enumerated Devices
+
+- localhost:3121/xilinx_tcf/Digilent/210299BBCF40 | part=xczu4 | idcode=00000100011100100001000010010011
+- localhost:3121/xilinx_tcf/Digilent/210299BBCF40 | part=arm_dap | idcode=01011011101000000000010001110111
 
 ## Diagnosis
 
-- hw_server can see Digilent targets, but open_hw_target found no devices. This points to an empty JTAG chain, cable orientation issue, wrong header, bad board seating, wrong boot mode, or board power problem.
-- CH340 is UART only and is not part of the JTAG path.
+- At least one JTAG target returned a device. Driver and chain basics are alive.
+- CP210x is UART only and is not part of the JTAG path.
 - The FTDI devices are currently bound to the generic FTDI driver. That is not necessarily the main blocker if hw_server already enumerates Digilent targets.
+- The active chain is already enumerating xczu4, so the project can move from cable triage to smoke bitstream and PS+PL bring-up.
 
 ## Next Actions
 
-- Physically isolate the two FTDI cables. Unplug one, rerun this script, and identify which serial belongs to the 7z020 board.
-- Verify 14-pin JTAG ribbon orientation and pin-1 alignment on the baseboard header.
-- Confirm JTAG boot mode from board docs: BOOT_MODE0=ON and BOOT_MODE1=ON.
-- Keep only 12V power and the 14-pin JTAG cable during bring-up. Treat CH340 as unrelated UART.
-- If hw_server still sees targets but device_count=0, focus on cable/header/core-board seating and JTAG chain continuity before reinstalling drivers.
-- Reinstall drivers only if hw_server stops enumerating the Digilent targets at all.
+- Keep JTAG and UART responsibilities separate: FTDI/Digilent is the download chain, and CH340/CP210x is only the console.
+- If xczu4 is already visible, proceed to smoke bitstream, AXI-Lite register readback, and AXI DMA loopback before spending more time on driver reinstalls.
+- Keep 12V power applied during bring-up and verify the board remains in the documented JTAG boot switch setting.
+- If hw_server ever drops back to target_count=0, revisit cable visibility and driver binding first.
+- Use docs/bringup_mzu04a_zu4ev.md as the board-level source of truth for the next stage.

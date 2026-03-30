@@ -1,7 +1,11 @@
 {
   "project_name": "FIR Lowpass Filter Research Kit",
   "report_language": "zh",
-  "target_part": "xc7z020clg400-2",
+  "board_name": "MZU04A-4EV",
+  "target_part": "xczu4ev-sfvc784-2-i",
+  "target_target_period_ns": 3.333,
+  "aggressive_target_period_ns": 2.5,
+  "uart_console": "COM9",
   "wp": 0.2,
   "ws": 0.23,
   "ast_min_db": 80.0,
@@ -40,6 +44,12 @@
     "l3_polyphase_ffa",
     "l3_pipeline",
     "vendor_fir_ip"
-  ]
+  ],
+  "zu4ev_system": {
+    "ps_uart": "UART0",
+    "ps_uart_mio": [34, 35],
+    "jtag_boot_switch": ["ON", "ON", "ON"],
+    "s_axi_hpc_port": "S_AXI_HPC0_FPD",
+    "m_axi_hpm_port": "M_AXI_HPM0_FPD"
+  }
 }
-

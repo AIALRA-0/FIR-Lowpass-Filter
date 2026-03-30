@@ -2,28 +2,36 @@
 
 ## 当前阻塞
 
-当前阻塞完整结果矩阵封板的问题，不再是功能正确性，也不再是 `L=3` 放不进 `xc7z020clg400-2`；当前真正的阻塞已经变成 `L=3` 的时序竞争力不足。
+当前阻塞完整结果矩阵封板的问题，已经不再是 `L=3` 放不进器件；当前真正的阻塞收敛成两件事：
+
+- `vendor FIR IP` 仍未加入 ZU4EV 总表
+- `PS + PL` 系统壳虽然已经能导出 `.xsa`，但 bare-metal harness 还没有完成端到端验证
 
 ## 已确认的现象
 
-- `fir_l3_polyphase`：已完成 `place_design` 与 `route_design`
-- `fir_l3_pipe`：已完成 `place_design` 与 `route_design`
+- `fir_l3_polyphase`：已完成 ZU4EV `place_design` 与 `route_design`
+- `fir_l3_pipe`：已完成 ZU4EV `place_design` 与 `route_design`
+- `zu4ev_fir_pipe_systolic_top`：已完成 bitstream 与 `.xsa` 导出
 
 当前结果如下：
 
 | Top | LUT | DSP | WNS (ns) | Fmax (MHz) | Throughput (MS/s) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `fir_l3_polyphase` | `36716` | `175` | `-14.224` | `52.018` | `156.055` |
-| `fir_l3_pipe` | `36852` | `175` | `-14.567` | `51.106` | `153.319` |
+| `fir_pipe_systolic` | `16712` | `132` | `1.156` | `459.348` | `459.348` |
+| `fir_l3_polyphase` | `34687` | `175` | `-4.533` | `127.129` | `381.388` |
+| `fir_l3_pipe` | `34786` | `175` | `-4.925` | `121.095` | `363.284` |
 
 ## 结论
 
 - 当前问题不是“资源完全超限”
-- 当前问题是：虽然 `L3 FFA` 已把实现压进了 `xc7z020`，但关键路径仍然太长，离 `3 * Fmax >= 307.031 MS/s` 的门槛还差很远
+- 当前问题也不再是“L3 放不进 7020”
+- 当前问题是：在 ZU4EV 上，`L3` 已经有不错吞吐，但仍没有赢下 `performance hero` 或 `efficiency hero`
+- 要完成完全体封板，我们现在需要的是系统级收口，而不是继续围绕旧平台做资源挣扎
+- 系统壳的真实阻塞已从“Vivado BD 能不能起”下降为“Vitis 软件链和板上 smoke vectors 能不能闭环”
 
 ## 下一轮最有效的技术动作
 
-- 在 `fir_branch_core_mirror_pair` / `fir_branch_core_full` / `fir_branch_core_symm` 内部分层打 pipeline
-- 把当前单拍大加法树改成两级或三级累加网络
-- 重新评估 `H01 / H12` 的 DSP/LUT 映射，避免把大乘法树完全留给 LUT 慢路径
-- 如果一次内部 pipeline 重构后仍无法达到 `102.344 MHz`，再切换到 `xczu4ev`
+- 为 `fir_l3_pipe` 做真正的 DSP48E2 友好 pipeline 深化，把 `L3` 拉近 `fir_pipe_systolic`
+- 引入 `vendor FIR IP` 参考线，补齐最终冠军表
+- 用 `vitis/zu4ev_baremetal` 对 `zu4ev_fir_pipe_systolic_top.xsa` 跑最小 smoke vectors，完成第一次 `PS + PL` bring-up
+- 在系统壳稳定后，把第二个架构接进同一软件 harness，满足“至少两个架构上板”的最终验收

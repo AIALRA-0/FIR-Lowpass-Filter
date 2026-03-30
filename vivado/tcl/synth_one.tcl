@@ -6,6 +6,7 @@ if {![info exists ::env(TOP)] || $::env(TOP) eq ""} {
 
 set top_name $::env(TOP)
 set part_name [fir_target_part]
+set clk_period [fir_target_period_ns]
 set build_dir [fir_build_dir $top_name]
 
 create_project -in_memory -part $part_name
@@ -13,7 +14,7 @@ fir_read_sources $top_name
 synth_design -top $top_name -part $part_name
 
 if {[llength [get_ports clk]] > 0} {
-    create_clock -period 5.000 -name sys_clk [get_ports clk]
+    create_clock -period $clk_period -name sys_clk [get_ports clk]
 }
 
 opt_design
@@ -29,7 +30,7 @@ set fp [open $out_file w]
 puts $fp "top=$top_name"
 puts $fp "part=$part_name"
 puts $fp "build_dir=$build_dir"
+puts $fp "target_period_ns=$clk_period"
 close $fp
 
 close_project
-

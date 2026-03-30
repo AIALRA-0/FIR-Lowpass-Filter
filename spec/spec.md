@@ -43,8 +43,22 @@
 
 ## 不进入主线验收的内容
 
-- `xczu4ev` 结果
+- `xc7z020clg400-2` 的主线结果
 - transpose 主设计
 - TDM 变体
 - 英文完整版报告
 
+## 当前主平台
+
+- 开发板：`MZU04A-4EV`
+- 主芯片：`XCZU4EV-SFVC784-2I`
+- PS 串口：`UART0`，`MIO34/35`
+- 主控制台：`COM9 / CP210x`
+- JTAG 启动模式：`开关 1-ON 2-ON 3-ON`
+
+## ZU4EV 实现默认值
+
+- 默认 post-route 目标周期：`3.333 ns`
+- 激进 sweep 目标周期：`2.500 ns`
+- 主线系统形态：`PS + PL + AXI DMA + AXI-Stream FIR shell + AXI-Lite control`
+- PS 软件栈：`Bare-metal Vitis`

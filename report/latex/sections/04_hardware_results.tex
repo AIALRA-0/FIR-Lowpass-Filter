@@ -2,3 +2,6 @@
 
 本章汇总 Vivado 综合与实现得到的 LUT、FF、DSP、BRAM、时钟频率、功耗和归一化指标。
 
+当前主线器件已经切换为 \texttt{XCZU4EV-SFVC784-2I}，默认目标周期为 \texttt{3.333 ns}。截至目前，五个自研 RTL 架构均已完成 ZU4EV 上的 post-route 数据收集，其中 \texttt{fir\_pipe\_systolic} 是唯一在该目标周期下取得正裕量的版本，估计 \texttt{Fmax = 459.348 MHz}，同时保持最低的 \texttt{energy/sample}。
+
+\texttt{fir\_l2\_polyphase} 与 \texttt{fir\_l3\_polyphase} 证明了并行 polyphase datapath 在大器件上的可实现性：前者达到约 \texttt{278.668 MS/s}，后者达到约 \texttt{381.388 MS/s}。不过从当前结果看，\texttt{L=3} 仍未超越高质量标量流水线的综合表现，因此 ZU4EV 平台下的英雄架构仍然是 \texttt{fir\_pipe\_systolic}。完整数据以仓库内 \texttt{data/impl\_results.csv} 为唯一真源。

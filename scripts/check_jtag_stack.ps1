@@ -6,6 +6,24 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).ProviderPath
+$specPath = Join-Path $repo 'spec\spec.json'
+$spec = $null
+if (Test-Path $specPath) {
+    try {
+        $spec = Get-Content -Raw $specPath | ConvertFrom-Json
+    } catch {
+        $spec = $null
+    }
+}
+
+$boardName = if ($spec -and $spec.board_name) { [string]$spec.board_name } else { 'Active Board' }
+$targetPart = if ($spec -and $spec.target_part) { [string]$spec.target_part } else { '' }
+$uartConsole = if ($spec -and $spec.uart_console) { [string]$spec.uart_console } else { '' }
+$bootSwitch = @()
+if ($spec -and $spec.zu4ev_system -and $spec.zu4ev_system.jtag_boot_switch) {
+    $bootSwitch = @($spec.zu4ev_system.jtag_boot_switch)
+}
+
 $hwServerBat = Join-Path $VivadoBin 'hw_server.bat'
 $vivadoBat = Join-Path $VivadoBin 'vivado.bat'
 $digilentInstaller = Join-Path $VivadoBin '..\data\xicom\cable_drivers\nt64\digilent\install_digilent.exe'
@@ -17,7 +35,7 @@ if (-not (Test-Path $vivadoBat)) {
     throw "vivado.bat not found: $vivadoBat"
 }
 
-$devicePattern = 'VID_0403&PID_6014|VID_1A86&PID_7523'
+$devicePattern = 'VID_0403&PID_6014|VID_1A86&PID_7523|VID_10C4&PID_EA60'
 $presentDevices =
     Get-PnpDevice -PresentOnly |
     Where-Object { $_.InstanceId -match $devicePattern } |
@@ -97,12 +115,22 @@ if ($targetCount -eq 0) {
 if ($presentDevices | Where-Object { $_.instance_id -match 'VID_1A86&PID_7523' }) {
     $diagnosis += 'CH340 is UART only and is not part of the JTAG path.'
 }
+if ($presentDevices | Where-Object { $_.instance_id -match 'VID_10C4&PID_EA60' }) {
+    $diagnosis += 'CP210x is UART only and is not part of the JTAG path.'
+}
 if ($presentDevices | Where-Object { $_.instance_id -match 'VID_0403&PID_6014' -and $_.provider -eq 'FTDI' }) {
     $diagnosis += 'The FTDI devices are currently bound to the generic FTDI driver. That is not necessarily the main blocker if hw_server already enumerates Digilent targets.'
+}
+if ($devices | Where-Object { $_.part -eq 'xczu4' }) {
+    $diagnosis += 'The active chain is already enumerating xczu4, so the project can move from cable triage to smoke bitstream and PS+PL bring-up.'
 }
 
 $status = [ordered]@{
     checked_at = (Get-Date).ToString('s')
+    board_name = $boardName
+    target_part = $targetPart
+    uart_console = $uartConsole
+    jtag_boot_switch = $bootSwitch
     vivado_bin = $VivadoBin
     hw_server = $hwServerBat
     vivado = $vivadoBat
@@ -129,6 +157,13 @@ $lines = @(
     '# JTAG Status',
     '',
     "Checked at: $($status.checked_at)",
+    '',
+    '## Active Platform',
+    '',
+    "- board_name: $boardName",
+    "- target_part: $targetPart",
+    $(if ($uartConsole) { "- uart_console: $uartConsole" } else { '' }),
+    $(if ($bootSwitch.Count -gt 0) { "- jtag_boot_switch: $([string]::Join(' / ', $bootSwitch))" } else { '' }),
     '',
     '## Toolchain',
     '',
@@ -181,14 +216,14 @@ $lines += @(
     '',
     '## Next Actions',
     '',
-    '- Physically isolate the two FTDI cables. Unplug one, rerun this script, and identify which serial belongs to the 7z020 board.',
-    '- Verify 14-pin JTAG ribbon orientation and pin-1 alignment on the baseboard header.',
-    '- Confirm JTAG boot mode from board docs: BOOT_MODE0=ON and BOOT_MODE1=ON.',
-    '- Keep only 12V power and the 14-pin JTAG cable during bring-up. Treat CH340 as unrelated UART.',
-    '- If hw_server still sees targets but device_count=0, focus on cable/header/core-board seating and JTAG chain continuity before reinstalling drivers.',
-    '- Reinstall drivers only if hw_server stops enumerating the Digilent targets at all.'
+    '- Keep JTAG and UART responsibilities separate: FTDI/Digilent is the download chain, and CH340/CP210x is only the console.',
+    '- If xczu4 is already visible, proceed to smoke bitstream, AXI-Lite register readback, and AXI DMA loopback before spending more time on driver reinstalls.',
+    '- Keep 12V power applied during bring-up and verify the board remains in the documented JTAG boot switch setting.',
+    '- If hw_server ever drops back to target_count=0, revisit cable visibility and driver binding first.',
+    '- Use docs/bringup_mzu04a_zu4ev.md as the board-level source of truth for the next stage.'
 )
 
+$lines = $lines | Where-Object { $_ -ne '' -or ($_.Length -eq 0) }
 $lines | Set-Content -Path $reportPath -Encoding utf8
 
 Write-Host "Wrote $jsonPath"

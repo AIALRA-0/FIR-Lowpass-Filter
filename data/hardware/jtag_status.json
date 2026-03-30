@@ -1,5 +1,13 @@
 ﻿{
-    "checked_at":  "2026-03-29T21:16:24",
+    "checked_at":  "2026-03-29T23:13:40",
+    "board_name":  "MZU04A-4EV",
+    "target_part":  "xczu4ev-sfvc784-2-i",
+    "uart_console":  "COM9",
+    "jtag_boot_switch":  [
+                             "ON",
+                             "ON",
+                             "ON"
+                         ],
     "vivado_bin":  "E:\\Xilinx\\Vivado\\2024.1\\bin",
     "hw_server":  "E:\\Xilinx\\Vivado\\2024.1\\bin\\hw_server.bat",
     "vivado":  "E:\\Xilinx\\Vivado\\2024.1\\bin\\vivado.bat",
@@ -7,13 +15,13 @@
     "hw_server_url":  "localhost:3121",
     "present_devices":  [
                             {
-                                "friendly_name":  "USB Serial Converter",
-                                "class":  "USB",
+                                "friendly_name":  "Silicon Labs CP210x USB to UART Bridge (COM9)",
+                                "class":  "Ports",
                                 "status":  "OK",
-                                "instance_id":  "USB\\VID_0403\u0026PID_6014\\210512180081",
-                                "driver_inf":  "oem104.inf",
-                                "provider":  "FTDI",
-                                "service":  "FTDIBUS"
+                                "instance_id":  "USB\\VID_10C4\u0026PID_EA60\\0244B448",
+                                "driver_inf":  "oem195.inf",
+                                "provider":  "Silicon Laboratories Inc.",
+                                "service":  "silabser"
                             },
                             {
                                 "friendly_name":  "USB Serial Converter",
@@ -23,15 +31,6 @@
                                 "driver_inf":  "oem104.inf",
                                 "provider":  "FTDI",
                                 "service":  "FTDIBUS"
-                            },
-                            {
-                                "friendly_name":  "USB-SERIAL CH340 (COM7)",
-                                "class":  "Ports",
-                                "status":  "OK",
-                                "instance_id":  "USB\\VID_1A86\u0026PID_7523\\5\u002627EC4662\u00260\u002610",
-                                "driver_inf":  "oem187.inf",
-                                "provider":  "wch.cn",
-                                "service":  "CH341SER_A64"
                             }
                         ],
     "installed_driver_hints":  [
@@ -57,23 +56,29 @@
     "hw_targets":  [
                        {
                            "target":  "localhost:3121/xilinx_tcf/Digilent/210299BBCF40",
-                           "open_rc":  1,
-                           "open_msg":  "ERROR: [Common 17-39] \u0027open_hw_target\u0027 failed due to earlier errors. ",
-                           "device_count":  0
-                       },
-                       {
-                           "target":  "localhost:3121/xilinx_tcf/Digilent/210512180081",
-                           "open_rc":  1,
-                           "open_msg":  "ERROR: [Common 17-39] \u0027open_hw_target\u0027 failed due to earlier errors. ",
-                           "device_count":  0
+                           "open_rc":  0,
+                           "open_msg":  "",
+                           "device_count":  2
                        }
                    ],
     "hw_devices":  [
-
+                       {
+                           "target":  "localhost:3121/xilinx_tcf/Digilent/210299BBCF40",
+                           "hw_device":  "xczu4_0",
+                           "part":  "xczu4",
+                           "idcode":  "00000100011100100001000010010011"
+                       },
+                       {
+                           "target":  "localhost:3121/xilinx_tcf/Digilent/210299BBCF40",
+                           "hw_device":  "arm_dap_1",
+                           "part":  "arm_dap",
+                           "idcode":  "01011011101000000000010001110111"
+                       }
                    ],
     "diagnosis":  [
-                      "hw_server can see Digilent targets, but open_hw_target found no devices. This points to an empty JTAG chain, cable orientation issue, wrong header, bad board seating, wrong boot mode, or board power problem.",
-                      "CH340 is UART only and is not part of the JTAG path.",
-                      "The FTDI devices are currently bound to the generic FTDI driver. That is not necessarily the main blocker if hw_server already enumerates Digilent targets."
+                      "At least one JTAG target returned a device. Driver and chain basics are alive.",
+                      "CP210x is UART only and is not part of the JTAG path.",
+                      "The FTDI devices are currently bound to the generic FTDI driver. That is not necessarily the main blocker if hw_server already enumerates Digilent targets.",
+                      "The active chain is already enumerating xczu4, so the project can move from cable triage to smoke bitstream and PS+PL bring-up."
                   ]
 }

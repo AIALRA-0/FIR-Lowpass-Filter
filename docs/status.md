@@ -13,15 +13,17 @@
 | P06 | RTL 公共骨架与基线 | 完成 | `fir_symm_base` 已完成 bit-true 标量回归 |
 | P07 | 流水线 systolic | 完成 | `fir_pipe_systolic` 已完成 bit-true 标量回归并刷新 Vivado 结果 |
 | P08 | `L=2` polyphase | 完成 | 已替换参考内核为真正 `polyphase + symmetry` RTL，并通过向量回归与 Vivado 实现 |
-| P09 | `L=3` polyphase / `L=3 + pipeline` | 完成 | 已实现共享 `L3 FFA core`，两个版本均通过 bit-true 回归并成功在 `xc7z020` 上 place/route |
+| P09 | `L=3` polyphase / `L=3 + pipeline` | 完成 | 已实现共享 `L3 FFA core`，两个版本均通过 bit-true 回归并完成 ZU4EV post-route |
 | P10 | 统一验证链 | 完成 | 标量与向量最小回归链已打通，`impulse / step / random_short / lane_alignment` 可一键运行 |
-| P11 | Vivado 综合 / 实现 | 进行中 | 五个自研架构的 Vivado 结果已刷新；`L3` 已 fit 但时序远低于 hero 门槛，vendor FIR IP 尚未加入总表 |
-| P12 | Pages / LaTeX / Overleaf | 进行中 | 文档骨架已建立，正在同步最新结果 |
+| P11 | Vivado 综合 / 实现 | 进行中 | ZU4EV 自研五个架构结果已刷新；`zu4ev_fir_pipe_systolic_top` 已导出 `.xsa`；`vendor FIR IP` 仍待纳入总表 |
+| P12 | Pages / LaTeX / Overleaf | 进行中 | 文档骨架已建立，当前正在同步 ZU4EV 主线、系统壳与上板流程 |
 
 ## 当前默认环境
 
 - MATLAB：`R2024b`
-- 主 FPGA：`xc7z020clg400-2`
+- 主 FPGA：`xczu4ev-sfvc784-2-i`
+- 开发板：`MZU04A-4EV`
+- UART：`COM9 / CP210x`
 - 报告语言：中文优先
 - Git 流程：直接推送 `main`
 
@@ -29,18 +31,20 @@
 
 - `final_spec` 浮点：`Ap = 0.0304 dB`，`Ast = 83.9902 dB`
 - 固定点默认：`Wcoef = 20`，`Wout = 16`，`Wacc = 46`
-- `fir_symm_base`：`WNS = -14.059 ns`，`Fmax = 52.469 MHz`
-- `fir_pipe_systolic`：`WNS = 1.743 ns`，`Fmax = 307.031 MHz`
-- `fir_l2_polyphase`：`WNS = -13.936 ns`，`Fmax = 52.809 MHz`，`throughput = 105.619 MS/s`
+- `fir_symm_base`：`WNS = -4.537 ns`，`Fmax = 127.065 MHz`
+- `fir_pipe_systolic`：`WNS = 1.156 ns`，`Fmax = 459.348 MHz`
+- `fir_l2_polyphase`：`WNS = -3.844 ns`，`Fmax = 139.334 MHz`，`throughput = 278.668 MS/s`
 - 标量回归：`fir_symm_base` / `fir_pipe_systolic` 已通过 `impulse`、`step`、`random_short`
 - 向量回归：`fir_l2_polyphase` / `fir_l3_polyphase` / `fir_l3_pipe` 已通过 `impulse`、`step`、`random_short`、`lane_alignment`
-- `fir_l3_polyphase`：`WNS = -14.224 ns`，`Fmax = 52.018 MHz`，`throughput = 156.055 MS/s`，`36716 LUT`，`175 DSP`
-- `fir_l3_pipe`：`WNS = -14.567 ns`，`Fmax = 51.106 MHz`，`throughput = 153.319 MS/s`，`36852 LUT`，`175 DSP`
+- `fir_l3_polyphase`：`WNS = -4.533 ns`，`Fmax = 127.129 MHz`，`throughput = 381.388 MS/s`，`34687 LUT`，`175 DSP`
+- `fir_l3_pipe`：`WNS = -4.925 ns`，`Fmax = 121.095 MHz`，`throughput = 363.284 MS/s`，`34786 LUT`，`175 DSP`
+- 系统壳：`build/zu4ev_system/zu4ev_fir_pipe_systolic_top/zu4ev_fir_pipe_systolic_top.xsa` 已导出
 
 ## 当前结论
 
-- 当前已成功落板的版本里，`fir_pipe_systolic` 同时是 `performance hero` 与 `efficiency hero`
-- `fir_l2_polyphase` 证明了真正 polyphase datapath 已进入可综合、可回归状态，但在 `xc7z020` 上并不比高质量标量流水线更划算
-- `fir_l3_polyphase` 与 `fir_l3_pipe` 已完成 `FFA` 级压缩并成功 fit 到 `xc7z020`，但当前关键阻塞已从“资源放不下”转为“时序严重不过”
-- 当前 `L3` 系列吞吐均低于 `fir_pipe_systolic` 的 `307.031 MS/s`，因此尚未达到预设 hero 门槛
-- JTAG 侧当前也已有独立结论：`hw_server` 能枚举 Digilent target，但两条 target 都读不到器件，详见 `docs/bringup_xc7z020_jtag.md`
+- 在当前 ZU4EV 自研矩阵中，`fir_pipe_systolic` 同时是 `performance hero` 与 `efficiency hero`
+- `fir_l2_polyphase` 证明了真正 polyphase datapath 已进入可综合、可回归、可在大器件上公平比较的状态
+- `fir_l3_polyphase` 和 `fir_l3_pipe` 已不再受 7020 面积限制，当前结论变成：`L3` 吞吐很强，但仍未打赢高质量标量流水线
+- `L3` 当前主问题不是“能不能放下”，而是“如何把 `DSP48E2` 友好的高性能版本做成真正的第二名候选”
+- JTAG 链路已经从“驱动排障”阶段进入“系统 bring-up”阶段，当前能够枚举到 `xczu4` 与 `arm_dap`，详见 `docs/bringup_mzu04a_zu4ev.md`
+- 系统级主线已经从“只有 RTL 内核”进入“可导出 Vitis 平台”的阶段，下一步是把 `vitis/zu4ev_baremetal` 与该 `.xsa` 真正联调起来

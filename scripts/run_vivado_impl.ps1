@@ -1,6 +1,8 @@
 param(
     [ValidateSet('fir_symm_base', 'fir_pipe_systolic', 'fir_l2_polyphase', 'fir_l3_polyphase', 'fir_l3_pipe', 'all')]
-    [string]$Top = 'all'
+    [string]$Top = 'all',
+    [string]$TargetPart = '',
+    [double]$TargetPeriodNs = 0.0
 )
 
 $ErrorActionPreference = 'Stop'
@@ -8,6 +10,23 @@ $ErrorActionPreference = 'Stop'
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).ProviderPath
 $vivadoBin = if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'E:\Xilinx\Vivado\2024.1\bin' }
 $vivado = Join-Path $vivadoBin 'vivado.bat'
+$spec = $null
+try {
+    $spec = Get-Content (Join-Path $repo 'spec\spec.json') -Raw | ConvertFrom-Json
+}
+catch {
+    $spec = [pscustomobject]@{
+        target_part = 'xczu4ev-sfvc784-2-i'
+        target_target_period_ns = 3.333
+    }
+}
+
+if (-not $TargetPart) {
+    $TargetPart = $spec.target_part
+}
+if ($TargetPeriodNs -le 0.0) {
+    $TargetPeriodNs = [double]$spec.target_target_period_ns
+}
 
 if (-not (Test-Path $vivado)) {
     throw "Vivado executable not found: $vivado"
@@ -33,9 +52,11 @@ New-Item -ItemType Directory -Force -Path $repoBuild | Out-Null
 $failures = @()
 
 foreach ($topName in $tops) {
-    Write-Host "=== Running staged Vivado implementation for $topName ==="
+    Write-Host "=== Running staged Vivado implementation for $topName on $TargetPart @ ${TargetPeriodNs}ns ==="
     $env:TOP = $topName
     $env:FIR_REPO_ROOT = $stageRoot
+    $env:TARGET_PART = $TargetPart
+    $env:TARGET_PERIOD_NS = [string]::Format([Globalization.CultureInfo]::InvariantCulture, "{0:0.###}", $TargetPeriodNs)
     $stageBuild = Join-Path $stageRoot ("build/vivado/{0}" -f $topName)
     New-Item -ItemType Directory -Force -Path $stageBuild | Out-Null
     $logPath = Join-Path $stageBuild 'vivado.log'
