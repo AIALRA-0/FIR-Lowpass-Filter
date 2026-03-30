@@ -1,237 +1,44 @@
 `timescale 1ns/1ps
 
 `include "fir_params.vh"
-`include "fir_polyphase_params.vh"
 
 module fir_l3_polyphase (
-    input  wire                              clk,
-    input  wire                              rst,
-    input  wire                              in_valid,
-    input  wire signed [3*`FIR_WIN-1:0]      in_vec,
-    output wire                              out_valid,
-    output wire signed [3*`FIR_WOUT-1:0]     out_vec
+    input  wire                          clk,
+    input  wire                          rst,
+    input  wire                          in_valid,
+    input  wire signed [3*`FIR_WIN-1:0]  in_vec,
+    output wire                          out_valid,
+    output wire signed [3*`FIR_WOUT-1:0] out_vec
 );
 
-localparam integer WPAIR = `FIR_WACC + 1;
-localparam integer WMAT  = `FIR_WACC + 2;
-
-`include "fir_polyphase_coeffs.vh"
+localparam integer WCORE = `FIR_WACC + 4;
 
 wire signed [`FIR_WIN-1:0] lane0_in = in_vec[`FIR_WIN-1:0];
 wire signed [`FIR_WIN-1:0] lane1_in = in_vec[2*`FIR_WIN-1:`FIR_WIN];
 wire signed [`FIR_WIN-1:0] lane2_in = in_vec[3*`FIR_WIN-1:2*`FIR_WIN];
 
-wire signed [`FIR_L3_E0_TAPS*`FIR_WCOEF-1:0] coeff_l3_e0_bus;
-wire signed [`FIR_L3_E1_UNIQ*`FIR_WCOEF-1:0] coeff_l3_e1_bus;
-wire signed [`FIR_L3_E2_TAPS*`FIR_WCOEF-1:0] coeff_l3_e2_bus;
-
-wire signed [`FIR_WACC-1:0] a0_acc;
-wire signed [`FIR_WACC-1:0] a1_acc;
-wire signed [`FIR_WACC-1:0] a2_acc;
-wire signed [`FIR_WACC-1:0] b0_acc;
-wire signed [`FIR_WACC-1:0] b1_acc;
-wire signed [`FIR_WACC-1:0] b2_acc;
-wire signed [`FIR_WACC-1:0] c0_acc;
-wire signed [`FIR_WACC-1:0] c1_acc;
-wire signed [`FIR_WACC-1:0] c2_acc;
-wire                        branch_valid;
-
-wire signed [WPAIR-1:0] y0_delay_pair = {{1{b2_acc[`FIR_WACC-1]}}, b2_acc} + {{1{c1_acc[`FIR_WACC-1]}}, c1_acc};
-wire signed [WPAIR-1:0] y0_delay_pair_d1;
-wire signed [`FIR_WACC-1:0] c2_acc_d1;
-
-wire signed [WMAT-1:0] y0_sum = {{2{a0_acc[`FIR_WACC-1]}}, a0_acc} + {{1{y0_delay_pair_d1[WPAIR-1]}}, y0_delay_pair_d1};
-wire signed [WMAT-1:0] y1_sum = {{2{a1_acc[`FIR_WACC-1]}}, a1_acc}
-                              + {{2{b0_acc[`FIR_WACC-1]}}, b0_acc}
-                              + {{2{c2_acc_d1[`FIR_WACC-1]}}, c2_acc_d1};
-wire signed [WMAT-1:0] y2_sum = {{2{a2_acc[`FIR_WACC-1]}}, a2_acc}
-                              + {{2{b1_acc[`FIR_WACC-1]}}, b1_acc}
-                              + {{2{c0_acc[`FIR_WACC-1]}}, c0_acc};
+wire signed [WCORE-1:0] y0_sum;
+wire signed [WCORE-1:0] y1_sum;
+wire signed [WCORE-1:0] y2_sum;
 wire signed [`FIR_WOUT-1:0] out_lane0;
 wire signed [`FIR_WOUT-1:0] out_lane1;
 wire signed [`FIR_WOUT-1:0] out_lane2;
 
-genvar g;
-generate
-for (g = 0; g < `FIR_L3_E0_TAPS; g = g + 1) begin : g_l3_e0_coeff
-    assign coeff_l3_e0_bus[(g+1)*`FIR_WCOEF-1 -: `FIR_WCOEF] = fir_l3_e0_coeff_at(g);
-end
-for (g = 0; g < `FIR_L3_E1_UNIQ; g = g + 1) begin : g_l3_e1_coeff
-    assign coeff_l3_e1_bus[(g+1)*`FIR_WCOEF-1 -: `FIR_WCOEF] = fir_l3_e1_coeff_at(g);
-end
-for (g = 0; g < `FIR_L3_E2_TAPS; g = g + 1) begin : g_l3_e2_coeff
-    assign coeff_l3_e2_bus[(g+1)*`FIR_WCOEF-1 -: `FIR_WCOEF] = fir_l3_e2_coeff_at(g);
-end
-endgenerate
-
-fir_branch_core_full #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E0_TAPS),
-    .USE_DSP(0)
-) u_e0_x0 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane0_in),
-    .coeff_bus(coeff_l3_e0_bus),
-    .acc_out(a0_acc)
-);
-
-fir_branch_core_full #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E0_TAPS),
-    .USE_DSP(0)
-) u_e0_x1 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane1_in),
-    .coeff_bus(coeff_l3_e0_bus),
-    .acc_out(a1_acc)
-);
-
-fir_branch_core_full #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E0_TAPS),
-    .USE_DSP(0)
-) u_e0_x2 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane2_in),
-    .coeff_bus(coeff_l3_e0_bus),
-    .acc_out(a2_acc)
-);
-
-fir_branch_core_symm #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E1_TAPS),
-    .UNIQ(`FIR_L3_E1_UNIQ)
-) u_e1_x0 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane0_in),
-    .coeff_bus(coeff_l3_e1_bus),
-    .acc_out(b0_acc)
-);
-
-fir_branch_core_symm #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E1_TAPS),
-    .UNIQ(`FIR_L3_E1_UNIQ)
-) u_e1_x1 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane1_in),
-    .coeff_bus(coeff_l3_e1_bus),
-    .acc_out(b1_acc)
-);
-
-fir_branch_core_symm #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E1_TAPS),
-    .UNIQ(`FIR_L3_E1_UNIQ)
-) u_e1_x2 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane2_in),
-    .coeff_bus(coeff_l3_e1_bus),
-    .acc_out(b2_acc)
-);
-
-fir_branch_core_full #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E2_TAPS),
-    .USE_DSP(0)
-) u_e2_x0 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane0_in),
-    .coeff_bus(coeff_l3_e2_bus),
-    .acc_out(c0_acc)
-);
-
-fir_branch_core_full #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E2_TAPS),
-    .USE_DSP(0)
-) u_e2_x1 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane1_in),
-    .coeff_bus(coeff_l3_e2_bus),
-    .acc_out(c1_acc)
-);
-
-fir_branch_core_full #(
-    .WIN(`FIR_WIN),
-    .WCOEF(`FIR_WCOEF),
-    .WACC(`FIR_WACC),
-    .TAPS(`FIR_L3_E2_TAPS),
-    .USE_DSP(0)
-) u_e2_x2 (
-    .clk(clk),
-    .rst(rst),
-    .en(in_valid),
-    .in_sample(lane2_in),
-    .coeff_bus(coeff_l3_e2_bus),
-    .acc_out(c2_acc)
-);
-
-valid_pipe #(
-    .LATENCY(1)
-) u_branch_valid (
+fir_l3_ffa_core u_l3_ffa_core (
     .clk(clk),
     .rst(rst),
     .in_valid(in_valid),
-    .out_valid(branch_valid)
-);
-
-fir_delay_signed #(
-    .WIDTH(WPAIR),
-    .DEPTH(1)
-) u_y0_delay (
-    .clk(clk),
-    .rst(rst),
-    .en(branch_valid),
-    .din(y0_delay_pair),
-    .dout(y0_delay_pair_d1)
-);
-
-fir_delay_signed #(
-    .WIDTH(`FIR_WACC),
-    .DEPTH(1)
-) u_y1_delay (
-    .clk(clk),
-    .rst(rst),
-    .en(branch_valid),
-    .din(c2_acc),
-    .dout(c2_acc_d1)
+    .lane0_in(lane0_in),
+    .lane1_in(lane1_in),
+    .lane2_in(lane2_in),
+    .out_valid(out_valid),
+    .y0_sum(y0_sum),
+    .y1_sum(y1_sum),
+    .y2_sum(y2_sum)
 );
 
 round_sat #(
-    .IN_WIDTH(WMAT),
+    .IN_WIDTH(WCORE),
     .OUT_WIDTH(`FIR_WOUT),
     .SHIFT(`FIR_SHIFT)
 ) u_round_sat_0 (
@@ -240,7 +47,7 @@ round_sat #(
 );
 
 round_sat #(
-    .IN_WIDTH(WMAT),
+    .IN_WIDTH(WCORE),
     .OUT_WIDTH(`FIR_WOUT),
     .SHIFT(`FIR_SHIFT)
 ) u_round_sat_1 (
@@ -249,7 +56,7 @@ round_sat #(
 );
 
 round_sat #(
-    .IN_WIDTH(WMAT),
+    .IN_WIDTH(WCORE),
     .OUT_WIDTH(`FIR_WOUT),
     .SHIFT(`FIR_SHIFT)
 ) u_round_sat_2 (
@@ -257,7 +64,6 @@ round_sat #(
     .dout(out_lane2)
 );
 
-assign out_valid = branch_valid;
 assign out_vec = {out_lane2, out_lane1, out_lane0};
 
 endmodule

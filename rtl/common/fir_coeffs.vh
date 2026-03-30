@@ -1,5 +1,3 @@
-`ifndef FIR_COEFFS_VH
-`define FIR_COEFFS_VH
 function automatic signed [`FIR_WCOEF-1:0] fir_coeff_at;
   input integer idx;
   begin
@@ -137,6 +135,5 @@ function automatic signed [`FIR_WCOEF-1:0] fir_coeff_at;
       130: fir_coeff_at = 20'sd111544;
       default: fir_coeff_at = 20'sd0;
     endcase
-  end
+end
 endfunction
-`endif

@@ -5,7 +5,8 @@ module fir_branch_core_full #(
     parameter WCOEF = 20,
     parameter WACC  = 46,
     parameter TAPS  = 87,
-    parameter USE_DSP = 1
+    parameter USE_DSP = 1,
+    parameter REVERSE_COEFF = 0
 ) (
     input  wire                               clk,
     input  wire                               rst,
@@ -43,9 +44,10 @@ for (g = 0; g < TAPS; g = g + 1) begin : g_full_taps
     wire signed [WIN-1:0]   sample_g;
     wire signed [WCOEF-1:0] coeff_g;
     wire signed [WPROD-1:0] prod_g;
+    localparam integer COEFF_IDX = REVERSE_COEFF ? (TAPS - 1 - g) : g;
 
     assign sample_g = hist_bus[(g+1)*WIN-1 -: WIN];
-    assign coeff_g  = coeff_bus[(g+1)*WCOEF-1 -: WCOEF];
+    assign coeff_g  = coeff_bus[(COEFF_IDX+1)*WCOEF-1 -: WCOEF];
     if (USE_DSP != 0) begin : g_prod_dsp
         assign prod_g = $signed(sample_g) * $signed(coeff_g);
     end else begin : g_prod_lut

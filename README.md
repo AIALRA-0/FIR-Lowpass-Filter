@@ -22,7 +22,8 @@
   - `132 DSP`
   - `3.951 nJ/sample`
 - `fir_l2_polyphase` 已经是货真价实的 `polyphase + symmetry` RTL，并成功在 `xc7z020clg400-2` 上实现
-- `fir_l3_polyphase` / `fir_l3_pipe` 当前 non-FFA 版本功能正确，但在 `xc7z020` 上被 `LUT/CARRY4` 资源上限挡住
+- `fir_l3_polyphase` / `fir_l3_pipe` 现在都已实现共享 `L3 FFA core`，并成功 fit 到 `xc7z020`
+- 但二者当前只有约 `52 MHz`，吞吐仍明显低于 `fir_pipe_systolic` 的 `307.031 MS/s`
 
 ## 项目目标
 
@@ -74,9 +75,8 @@
   - `fir_symm_base`：`52.469 MHz`，`2839 LUT`，`3569 FF`，`126 DSP`
   - `fir_pipe_systolic`：`307.031 MHz`，`16710 LUT`，`17224 FF`，`132 DSP`
   - `fir_l2_polyphase`：`52.809 MHz`，`13472 LUT`，`4396 FF`，`212 DSP`
-- 当前未成功 place：
-  - `fir_l3_polyphase`：`CARRY4 26769 > 13300`，`LUT as Logic 77369 > 53200`
-  - `fir_l3_pipe`：`CARRY4 26769 > 13300`，`LUT as Logic 77385 > 53200`
+  - `fir_l3_polyphase`：`52.018 MHz`，`36716 LUT`，`8907 FF`，`175 DSP`
+  - `fir_l3_pipe`：`51.106 MHz`，`36852 LUT`，`9158 FF`，`175 DSP`
 
 ## 目录结构
 
@@ -102,6 +102,15 @@ reports/        研究与实现分析 Markdown
 - `efficiency hero`：`throughput-per-DSP` 或 `energy-per-sample` 表现最优
 
 当前在已成功落板的版本中，二者都由 `fir_pipe_systolic` 获胜。
+
+## 当前硬件状态
+
+- 7z020 JTAG bring-up 文档：[`docs/bringup_xc7z020_jtag.md`](docs/bringup_xc7z020_jtag.md)
+- 当前检测脚本：`powershell -ExecutionPolicy Bypass -File scripts/check_jtag_stack.ps1`
+- 最新检测结论：
+  - `hw_server` 已能枚举到两条 Digilent target
+  - 但 `open_hw_target` 对两条 target 都报 `No devices detected`
+  - 当前主阻塞更像 JTAG 链无器件响应，而不是 CH340 或 Vivado 完全看不到下载线
 
 ## 同步约定
 

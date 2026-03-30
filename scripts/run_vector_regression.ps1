@@ -2,7 +2,7 @@ param(
     [ValidateSet('l2', 'l3', 'l3_pipe')]
     [string]$Dut = 'l2',
 
-    [ValidateSet('impulse', 'step', 'random_short', 'lane_alignment')]
+    [ValidateSet('impulse', 'step', 'random_short', 'lane_alignment', 'passband_edge', 'transition', 'stopband', 'multitone', 'overflow_corner')]
     [string]$Case = 'impulse'
 )
 
@@ -45,6 +45,13 @@ $commonFiles = @(
     '../../../rtl/common/fir_branch_core_symm.v',
     '../../../rtl/common/fir_branch_core_full.v'
 )
+
+if ($Dut -ne 'l2') {
+    $commonFiles += @(
+        '../../../rtl/common/fir_branch_core_mirror_pair.v',
+        '../../../rtl/common/fir_l3_ffa_core.v'
+    )
+}
 
 $topFile = switch ($Dut) {
     'l2' { '../../../rtl/fir_l2_polyphase/fir_l2_polyphase.v' }

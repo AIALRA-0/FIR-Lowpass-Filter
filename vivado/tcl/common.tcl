@@ -19,9 +19,9 @@ proc fir_build_dir {top_name} {
     return $dir
 }
 
-proc fir_common_sources {} {
+proc fir_common_sources {top_name} {
     set root [fir_repo_root]
-    return [list \
+    set srcs [list \
         [file join $root rtl common valid_pipe.v] \
         [file join $root rtl common delay_line.v] \
         [file join $root rtl common fir_delay_signed.v] \
@@ -30,6 +30,11 @@ proc fir_common_sources {} {
         [file join $root rtl common fir_branch_core_symm.v] \
         [file join $root rtl common fir_branch_core_full.v] \
     ]
+    if {$top_name eq "fir_l3_polyphase" || $top_name eq "fir_l3_pipe"} {
+        lappend srcs [file join $root rtl common fir_branch_core_mirror_pair.v]
+        lappend srcs [file join $root rtl common fir_l3_ffa_core.v]
+    }
+    return $srcs
 }
 
 proc fir_top_source {top_name} {
@@ -53,7 +58,7 @@ proc fir_include_dir {} {
 }
 
 proc fir_read_sources {top_name} {
-    set srcs [concat [fir_common_sources] [list [fir_top_source $top_name]]]
+    set srcs [concat [fir_common_sources $top_name] [list [fir_top_source $top_name]]]
     add_files -norecurse $srcs
     set_property include_dirs [list [fir_include_dir]] [current_fileset]
     update_compile_order -fileset sources_1

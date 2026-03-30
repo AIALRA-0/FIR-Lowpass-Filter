@@ -1,0 +1,79 @@
+﻿{
+    "checked_at":  "2026-03-29T21:16:24",
+    "vivado_bin":  "E:\\Xilinx\\Vivado\\2024.1\\bin",
+    "hw_server":  "E:\\Xilinx\\Vivado\\2024.1\\bin\\hw_server.bat",
+    "vivado":  "E:\\Xilinx\\Vivado\\2024.1\\bin\\vivado.bat",
+    "digilent_installer":  "E:\\Xilinx\\Vivado\\2024.1\\data\\xicom\\cable_drivers\\nt64\\digilent\\install_digilent.exe",
+    "hw_server_url":  "localhost:3121",
+    "present_devices":  [
+                            {
+                                "friendly_name":  "USB Serial Converter",
+                                "class":  "USB",
+                                "status":  "OK",
+                                "instance_id":  "USB\\VID_0403\u0026PID_6014\\210512180081",
+                                "driver_inf":  "oem104.inf",
+                                "provider":  "FTDI",
+                                "service":  "FTDIBUS"
+                            },
+                            {
+                                "friendly_name":  "USB Serial Converter",
+                                "class":  "USB",
+                                "status":  "OK",
+                                "instance_id":  "USB\\VID_0403\u0026PID_6014\\210299BBCF40",
+                                "driver_inf":  "oem104.inf",
+                                "provider":  "FTDI",
+                                "service":  "FTDIBUS"
+                            },
+                            {
+                                "friendly_name":  "USB-SERIAL CH340 (COM7)",
+                                "class":  "Ports",
+                                "status":  "OK",
+                                "instance_id":  "USB\\VID_1A86\u0026PID_7523\\5\u002627EC4662\u00260\u002610",
+                                "driver_inf":  "oem187.inf",
+                                "provider":  "wch.cn",
+                                "service":  "CH341SER_A64"
+                            }
+                        ],
+    "installed_driver_hints":  [
+                                   "\u003e Original Name:      digiftdibus.inf",
+                                   "\u003e Provider Name:      Digilent Inc.\r\n  Class Name:         USB",
+                                   "\u003e Original Name:      digiftdiport.inf",
+                                   "\u003e Provider Name:      Digilent Inc.\r\n  Class Name:         Ports",
+                                   "\u003e Provider Name:      Digilent Inc.\r\n  Class Name:         USB",
+                                   "\u003e Original Name:      ftdibus.inf",
+                                   "\u003e Provider Name:      FTDI\r\n  Class Name:         USB",
+                                   "\u003e Original Name:      ftdibus.inf",
+                                   "\u003e Provider Name:      FTDI\r\n  Class Name:         USB",
+                                   "\u003e Original Name:      ftdiport.inf",
+                                   "\u003e Provider Name:      FTDI\r\n  Class Name:         Ports",
+                                   "\u003e Original Name:      ftdiport.inf",
+                                   "\u003e Provider Name:      FTDI\r\n  Class Name:         Ports",
+                                   "\u003e Original Name:      windrvr6.inf\r\n  Provider Name:      Jungo",
+                                   "\u003e Provider Name:      Xilinx\r\n  Class Name:         Xilinx Drivers",
+                                   "\u003e Provider Name:      Xilinx\r\n  Class Name:         Net",
+                                   "\u003e Original Name:      xpcwinusb.inf",
+                                   "\u003e Provider Name:      Xilinx, Inc.\r\n  Class Name:         Programming cables"
+                               ],
+    "hw_targets":  [
+                       {
+                           "target":  "localhost:3121/xilinx_tcf/Digilent/210299BBCF40",
+                           "open_rc":  1,
+                           "open_msg":  "ERROR: [Common 17-39] \u0027open_hw_target\u0027 failed due to earlier errors. ",
+                           "device_count":  0
+                       },
+                       {
+                           "target":  "localhost:3121/xilinx_tcf/Digilent/210512180081",
+                           "open_rc":  1,
+                           "open_msg":  "ERROR: [Common 17-39] \u0027open_hw_target\u0027 failed due to earlier errors. ",
+                           "device_count":  0
+                       }
+                   ],
+    "hw_devices":  [
+
+                   ],
+    "diagnosis":  [
+                      "hw_server can see Digilent targets, but open_hw_target found no devices. This points to an empty JTAG chain, cable orientation issue, wrong header, bad board seating, wrong boot mode, or board power problem.",
+                      "CH340 is UART only and is not part of the JTAG path.",
+                      "The FTDI devices are currently bound to the generic FTDI driver. That is not necessarily the main blocker if hw_server already enumerates Digilent targets."
+                  ]
+}

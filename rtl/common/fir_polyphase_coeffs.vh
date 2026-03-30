@@ -1,5 +1,3 @@
-`ifndef FIR_POLYPHASE_COEFFS_VH
-`define FIR_POLYPHASE_COEFFS_VH
 
 function automatic signed [`FIR_WCOEF-1:0] fir_l2_e0_coeff_at;
   input integer idx;
@@ -395,4 +393,248 @@ function automatic signed [`FIR_WCOEF-1:0] fir_l3_e2_coeff_at;
   end
 endfunction
 
-`endif
+function automatic signed [`FIR_WCOEF-1:0] fir_l3_h01_coeff_at;
+  input integer idx;
+  begin
+    case (idx)
+      0: fir_l3_h01_coeff_at = 20'sd70;
+      1: fir_l3_h01_coeff_at = 20'sd239;
+      2: fir_l3_h01_coeff_at = 20'sd89;
+      3: fir_l3_h01_coeff_at = -20'sd185;
+      4: fir_l3_h01_coeff_at = 20'sd76;
+      5: fir_l3_h01_coeff_at = 20'sd178;
+      6: fir_l3_h01_coeff_at = -20'sd273;
+      7: fir_l3_h01_coeff_at = 20'sd4;
+      8: fir_l3_h01_coeff_at = 20'sd378;
+      9: fir_l3_h01_coeff_at = -20'sd355;
+      10: fir_l3_h01_coeff_at = -20'sd187;
+      11: fir_l3_h01_coeff_at = 20'sd654;
+      12: fir_l3_h01_coeff_at = -20'sd357;
+      13: fir_l3_h01_coeff_at = -20'sd536;
+      14: fir_l3_h01_coeff_at = 20'sd965;
+      15: fir_l3_h01_coeff_at = -20'sd199;
+      16: fir_l3_h01_coeff_at = -20'sd1064;
+      17: fir_l3_h01_coeff_at = 20'sd1243;
+      18: fir_l3_h01_coeff_at = 20'sd204;
+      19: fir_l3_h01_coeff_at = -20'sd1769;
+      20: fir_l3_h01_coeff_at = 20'sd1383;
+      21: fir_l3_h01_coeff_at = 20'sd942;
+      22: fir_l3_h01_coeff_at = -20'sd2607;
+      23: fir_l3_h01_coeff_at = 20'sd1243;
+      24: fir_l3_h01_coeff_at = 20'sd2094;
+      25: fir_l3_h01_coeff_at = -20'sd3492;
+      26: fir_l3_h01_coeff_at = 20'sd646;
+      27: fir_l3_h01_coeff_at = 20'sd3736;
+      28: fir_l3_h01_coeff_at = -20'sd4285;
+      29: fir_l3_h01_coeff_at = -20'sd646;
+      30: fir_l3_h01_coeff_at = 20'sd5957;
+      31: fir_l3_h01_coeff_at = -20'sd4793;
+      32: fir_l3_h01_coeff_at = -20'sd2995;
+      33: fir_l3_h01_coeff_at = 20'sd8953;
+      34: fir_l3_h01_coeff_at = -20'sd4711;
+      35: fir_l3_h01_coeff_at = -20'sd7175;
+      36: fir_l3_h01_coeff_at = 20'sd13336;
+      37: fir_l3_h01_coeff_at = -20'sd3412;
+      38: fir_l3_h01_coeff_at = -20'sd15652;
+      39: fir_l3_h01_coeff_at = 20'sd21816;
+      40: fir_l3_h01_coeff_at = 20'sd1562;
+      41: fir_l3_h01_coeff_at = -20'sd44770;
+      42: fir_l3_h01_coeff_at = 20'sd69171;
+      43: fir_l3_h01_coeff_at = 20'sd214951;
+      44: fir_l3_h01_coeff_at = 20'sd131513;
+      45: fir_l3_h01_coeff_at = -20'sd27736;
+      46: fir_l3_h01_coeff_at = -20'sd21483;
+      47: fir_l3_h01_coeff_at = 20'sd26474;
+      48: fir_l3_h01_coeff_at = -20'sd5292;
+      49: fir_l3_h01_coeff_at = -20'sd13276;
+      50: fir_l3_h01_coeff_at = 20'sd13022;
+      51: fir_l3_h01_coeff_at = 20'sd138;
+      52: fir_l3_h01_coeff_at = -20'sd9745;
+      53: fir_l3_h01_coeff_at = 20'sd7070;
+      54: fir_l3_h01_coeff_at = 20'sd2281;
+      55: fir_l3_h01_coeff_at = -20'sd7228;
+      56: fir_l3_h01_coeff_at = 20'sd3601;
+      57: fir_l3_h01_coeff_at = 20'sd3051;
+      58: fir_l3_h01_coeff_at = -20'sd5168;
+      59: fir_l3_h01_coeff_at = 20'sd1431;
+      60: fir_l3_h01_coeff_at = 20'sd3083;
+      61: fir_l3_h01_coeff_at = -20'sd3465;
+      62: fir_l3_h01_coeff_at = 20'sd112;
+      63: fir_l3_h01_coeff_at = 20'sd2703;
+      64: fir_l3_h01_coeff_at = -20'sd2106;
+      65: fir_l3_h01_coeff_at = -20'sd600;
+      66: fir_l3_h01_coeff_at = 20'sd2127;
+      67: fir_l3_h01_coeff_at = -20'sd1094;
+      68: fir_l3_h01_coeff_at = -20'sd882;
+      69: fir_l3_h01_coeff_at = 20'sd1508;
+      70: fir_l3_h01_coeff_at = -20'sd406;
+      71: fir_l3_h01_coeff_at = -20'sd882;
+      72: fir_l3_h01_coeff_at = 20'sd950;
+      73: fir_l3_h01_coeff_at = 20'sd0;
+      74: fir_l3_h01_coeff_at = -20'sd725;
+      75: fir_l3_h01_coeff_at = 20'sd509;
+      76: fir_l3_h01_coeff_at = 20'sd189;
+      77: fir_l3_h01_coeff_at = -20'sd508;
+      78: fir_l3_h01_coeff_at = 20'sd207;
+      79: fir_l3_h01_coeff_at = 20'sd230;
+      80: fir_l3_h01_coeff_at = -20'sd302;
+      81: fir_l3_h01_coeff_at = 20'sd36;
+      82: fir_l3_h01_coeff_at = 20'sd191;
+      83: fir_l3_h01_coeff_at = -20'sd158;
+      84: fir_l3_h01_coeff_at = -20'sd31;
+      85: fir_l3_h01_coeff_at = 20'sd240;
+      86: fir_l3_h01_coeff_at = 20'sd137;
+      default: fir_l3_h01_coeff_at = 20'sd0;
+    endcase
+  end
+endfunction
+
+function automatic signed [`FIR_WCOEF-1:0] fir_l3_h12_coeff_at;
+  input integer idx;
+  begin
+    case (idx)
+      0: fir_l3_h12_coeff_at = 20'sd137;
+      1: fir_l3_h12_coeff_at = 20'sd240;
+      2: fir_l3_h12_coeff_at = -20'sd31;
+      3: fir_l3_h12_coeff_at = -20'sd158;
+      4: fir_l3_h12_coeff_at = 20'sd191;
+      5: fir_l3_h12_coeff_at = 20'sd36;
+      6: fir_l3_h12_coeff_at = -20'sd302;
+      7: fir_l3_h12_coeff_at = 20'sd230;
+      8: fir_l3_h12_coeff_at = 20'sd207;
+      9: fir_l3_h12_coeff_at = -20'sd508;
+      10: fir_l3_h12_coeff_at = 20'sd189;
+      11: fir_l3_h12_coeff_at = 20'sd509;
+      12: fir_l3_h12_coeff_at = -20'sd725;
+      13: fir_l3_h12_coeff_at = 20'sd0;
+      14: fir_l3_h12_coeff_at = 20'sd950;
+      15: fir_l3_h12_coeff_at = -20'sd882;
+      16: fir_l3_h12_coeff_at = -20'sd406;
+      17: fir_l3_h12_coeff_at = 20'sd1508;
+      18: fir_l3_h12_coeff_at = -20'sd882;
+      19: fir_l3_h12_coeff_at = -20'sd1094;
+      20: fir_l3_h12_coeff_at = 20'sd2127;
+      21: fir_l3_h12_coeff_at = -20'sd600;
+      22: fir_l3_h12_coeff_at = -20'sd2106;
+      23: fir_l3_h12_coeff_at = 20'sd2703;
+      24: fir_l3_h12_coeff_at = 20'sd112;
+      25: fir_l3_h12_coeff_at = -20'sd3465;
+      26: fir_l3_h12_coeff_at = 20'sd3083;
+      27: fir_l3_h12_coeff_at = 20'sd1431;
+      28: fir_l3_h12_coeff_at = -20'sd5168;
+      29: fir_l3_h12_coeff_at = 20'sd3051;
+      30: fir_l3_h12_coeff_at = 20'sd3601;
+      31: fir_l3_h12_coeff_at = -20'sd7228;
+      32: fir_l3_h12_coeff_at = 20'sd2281;
+      33: fir_l3_h12_coeff_at = 20'sd7070;
+      34: fir_l3_h12_coeff_at = -20'sd9745;
+      35: fir_l3_h12_coeff_at = 20'sd138;
+      36: fir_l3_h12_coeff_at = 20'sd13022;
+      37: fir_l3_h12_coeff_at = -20'sd13276;
+      38: fir_l3_h12_coeff_at = -20'sd5292;
+      39: fir_l3_h12_coeff_at = 20'sd26474;
+      40: fir_l3_h12_coeff_at = -20'sd21483;
+      41: fir_l3_h12_coeff_at = -20'sd27736;
+      42: fir_l3_h12_coeff_at = 20'sd131513;
+      43: fir_l3_h12_coeff_at = 20'sd214951;
+      44: fir_l3_h12_coeff_at = 20'sd69171;
+      45: fir_l3_h12_coeff_at = -20'sd44770;
+      46: fir_l3_h12_coeff_at = 20'sd1562;
+      47: fir_l3_h12_coeff_at = 20'sd21816;
+      48: fir_l3_h12_coeff_at = -20'sd15652;
+      49: fir_l3_h12_coeff_at = -20'sd3412;
+      50: fir_l3_h12_coeff_at = 20'sd13336;
+      51: fir_l3_h12_coeff_at = -20'sd7175;
+      52: fir_l3_h12_coeff_at = -20'sd4711;
+      53: fir_l3_h12_coeff_at = 20'sd8953;
+      54: fir_l3_h12_coeff_at = -20'sd2995;
+      55: fir_l3_h12_coeff_at = -20'sd4793;
+      56: fir_l3_h12_coeff_at = 20'sd5957;
+      57: fir_l3_h12_coeff_at = -20'sd646;
+      58: fir_l3_h12_coeff_at = -20'sd4285;
+      59: fir_l3_h12_coeff_at = 20'sd3736;
+      60: fir_l3_h12_coeff_at = 20'sd646;
+      61: fir_l3_h12_coeff_at = -20'sd3492;
+      62: fir_l3_h12_coeff_at = 20'sd2094;
+      63: fir_l3_h12_coeff_at = 20'sd1243;
+      64: fir_l3_h12_coeff_at = -20'sd2607;
+      65: fir_l3_h12_coeff_at = 20'sd942;
+      66: fir_l3_h12_coeff_at = 20'sd1383;
+      67: fir_l3_h12_coeff_at = -20'sd1769;
+      68: fir_l3_h12_coeff_at = 20'sd204;
+      69: fir_l3_h12_coeff_at = 20'sd1243;
+      70: fir_l3_h12_coeff_at = -20'sd1064;
+      71: fir_l3_h12_coeff_at = -20'sd199;
+      72: fir_l3_h12_coeff_at = 20'sd965;
+      73: fir_l3_h12_coeff_at = -20'sd536;
+      74: fir_l3_h12_coeff_at = -20'sd357;
+      75: fir_l3_h12_coeff_at = 20'sd654;
+      76: fir_l3_h12_coeff_at = -20'sd187;
+      77: fir_l3_h12_coeff_at = -20'sd355;
+      78: fir_l3_h12_coeff_at = 20'sd378;
+      79: fir_l3_h12_coeff_at = 20'sd4;
+      80: fir_l3_h12_coeff_at = -20'sd273;
+      81: fir_l3_h12_coeff_at = 20'sd178;
+      82: fir_l3_h12_coeff_at = 20'sd76;
+      83: fir_l3_h12_coeff_at = -20'sd185;
+      84: fir_l3_h12_coeff_at = 20'sd89;
+      85: fir_l3_h12_coeff_at = 20'sd239;
+      86: fir_l3_h12_coeff_at = 20'sd70;
+      default: fir_l3_h12_coeff_at = 20'sd0;
+    endcase
+  end
+endfunction
+
+function automatic signed [`FIR_WCOEF-1:0] fir_l3_h012_coeff_at;
+  input integer idx;
+  begin
+    case (idx)
+      0: fir_l3_h012_coeff_at = 20'sd150;
+      1: fir_l3_h012_coeff_at = 20'sd353;
+      2: fir_l3_h012_coeff_at = 20'sd43;
+      3: fir_l3_h012_coeff_at = -20'sd247;
+      4: fir_l3_h012_coeff_at = 20'sd194;
+      5: fir_l3_h012_coeff_at = 20'sd152;
+      6: fir_l3_h012_coeff_at = -20'sd415;
+      7: fir_l3_h012_coeff_at = 20'sd172;
+      8: fir_l3_h012_coeff_at = 20'sd419;
+      9: fir_l3_h012_coeff_at = -20'sd624;
+      10: fir_l3_h012_coeff_at = 20'sd7;
+      11: fir_l3_h012_coeff_at = 20'sd836;
+      12: fir_l3_h012_coeff_at = -20'sd784;
+      13: fir_l3_h012_coeff_at = -20'sd379;
+      14: fir_l3_h012_coeff_at = 20'sd1379;
+      15: fir_l3_h012_coeff_at = -20'sd787;
+      16: fir_l3_h012_coeff_at = -20'sd1051;
+      17: fir_l3_h012_coeff_at = 20'sd1984;
+      18: fir_l3_h012_coeff_at = -20'sd500;
+      19: fir_l3_h012_coeff_at = -20'sd2054;
+      20: fir_l3_h012_coeff_at = 20'sd2535;
+      21: fir_l3_h012_coeff_at = 20'sd230;
+      22: fir_l3_h012_coeff_at = -20'sd3388;
+      23: fir_l3_h012_coeff_at = 20'sd2856;
+      24: fir_l3_h012_coeff_at = 20'sd1568;
+      25: fir_l3_h012_coeff_at = -20'sd5008;
+      26: fir_l3_h012_coeff_at = 20'sd2709;
+      27: fir_l3_h012_coeff_at = 20'sd3696;
+      28: fir_l3_h012_coeff_at = -20'sd6814;
+      29: fir_l3_h012_coeff_at = 20'sd1770;
+      30: fir_l3_h012_coeff_at = 20'sd6855;
+      31: fir_l3_h012_coeff_at = -20'sd8680;
+      32: fir_l3_h012_coeff_at = -20'sd454;
+      33: fir_l3_h012_coeff_at = 20'sd11511;
+      34: fir_l3_h012_coeff_at = -20'sd10470;
+      35: fir_l3_h012_coeff_at = -20'sd4965;
+      36: fir_l3_h012_coeff_at = 20'sd18968;
+      37: fir_l3_h012_coeff_at = -20'sd12181;
+      38: fir_l3_h012_coeff_at = -20'sd14869;
+      39: fir_l3_h012_coeff_at = 20'sd34873;
+      40: fir_l3_h012_coeff_at = -20'sd15074;
+      41: fir_l3_h012_coeff_at = -20'sd51386;
+      42: fir_l3_h012_coeff_at = 20'sd150290;
+      43: fir_l3_h012_coeff_at = 20'sd318358;
+      default: fir_l3_h012_coeff_at = 20'sd0;
+    endcase
+  end
+endfunction
+

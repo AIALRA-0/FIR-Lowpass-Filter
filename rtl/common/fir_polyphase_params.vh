@@ -10,4 +10,10 @@
 `define FIR_L3_E1_UNIQ 44
 `define FIR_L3_E2_TAPS 87
 `define FIR_L3_E2_UNIQ 87
+`define FIR_L3_H01_TAPS 87
+`define FIR_L3_H01_UNIQ 87
+`define FIR_L3_H12_TAPS 87
+`define FIR_L3_H12_UNIQ 87
+`define FIR_L3_H012_TAPS 87
+`define FIR_L3_H012_UNIQ 44
 `endif

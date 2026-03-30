@@ -12,7 +12,8 @@
   - `132 DSP`
   - `3.951 nJ/sample`
 - `L=2 polyphase` 已成为真正 polyphase RTL 并成功实现
-- `L=3` 当前 non-FFA 版本功能正确，但在 `xc7z020` 上因 `LUT/CARRY4` 超限未能 place
+- `L=3` 现在已采用共享 `L3 FFA core` 并成功 fit 到 `xc7z020`
+- 当前 `L=3` 的主阻塞已变成时序，而不是资源：约 `51-52 MHz`
 
 ## 导航
 
@@ -22,6 +23,8 @@
 - [阅读笔记](literature/reading_notes.md)
 - [回归报告](../reports/regression_report.md)
 - [综合总结](../reports/synth_summary.md)
+- [JTAG Bring-Up](bringup_xc7z020_jtag.md)
+- [JTAG 状态报告](../reports/jtag_status.md)
 
 ## 章节
 
@@ -37,4 +40,4 @@
 - `P00-P02` 研究与规格基线完成
 - `P03-P07` 标量设计、固定点、DFG、流水线完成
 - `P08-P10` 真正 polyphase RTL 与统一回归完成
-- `P11` 结果矩阵进行中
+- `P11` 结果矩阵已刷新，当前剩余主任务是 `L3` 时序优化与 vendor FIR IP 对照
