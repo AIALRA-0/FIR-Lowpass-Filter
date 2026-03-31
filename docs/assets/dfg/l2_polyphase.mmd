@@ -1,7 +1,8 @@
 flowchart LR
-    IN[2-lane input] --> DEMUX[Phase split]
-    DEMUX --> E0[Even polyphase branch]
-    DEMUX --> E1[Odd polyphase branch]
-    E0 --> COMB[Recombine outputs]
+    IN[2-lane block input] --> DEMUX[Deinterleave x0 / x1]
+    DEMUX --> E0[Even branch E0]
+    DEMUX --> E1[Odd branch E1]
+    E0 --> COMB[Lane recombine]
     E1 --> COMB
-    COMB --> OUT[2-lane output]
+    COMB --> QS[Round / Saturate]
+    QS --> OUT[2-lane output]

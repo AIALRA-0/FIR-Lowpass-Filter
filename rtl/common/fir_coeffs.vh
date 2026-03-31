@@ -135,5 +135,5 @@ function automatic signed [`FIR_WCOEF-1:0] fir_coeff_at;
       130: fir_coeff_at = 20'sd111544;
       default: fir_coeff_at = 20'sd0;
     endcase
-end
+  end
 endfunction

@@ -1,15 +1,15 @@
 # Board Stability
 
-本页把“板子跑通一次”和“板子能稳定重复跑”区分开来。为了避免早期调试期的失败 run 污染最终统计，这里主表只采用**当前正式 8-case 套件的最近 3 次通过运行**。
+This page distinguishes between “the board ran successfully once” and “the board can run stably and repeatedly.” To avoid failed runs from the early debug phase polluting the final statistics, the main table here uses only the **most recent 3 passing runs of the current formal 8-case suite**.
 
-## 最近 3 次正式窗口
+## Latest 3 Formal Windows
 
 | Arch | Expected Case Count | Window Runs | All Passed | Run IDs |
 | --- | ---: | ---: | --- | --- |
 | `fir_pipe_systolic` | `8` | `3` | `True` | `20260330-112958, 20260330-113315, 20260330-113630` |
 | `vendor_fir_ip` | `8` | `3` | `True` | `20260330-113137, 20260330-113453, 20260330-113805` |
 
-## 自研 Hero 稳定性
+## Custom Hero Stability
 
 | Case | Length | Cycles Min | Cycles Mean | Cycles Max | Mismatch Sum | Error Status Count |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -22,7 +22,7 @@
 | `stopband_sine` | `1024` | `1575401` | `1575433.667` | `1575459` | `0` | `0` |
 | `large_random_buffer` | `2048` | `1854209` | `1854228.333` | `1854251` | `0` | `0` |
 
-## Vendor 基线稳定性
+## Vendor Baseline Stability
 
 | Case | Length | Cycles Min | Cycles Mean | Cycles Max | Mismatch Sum | Error Status Count |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -35,21 +35,21 @@
 | `stopband_sine` | `1024` | `1575448` | `1575465.0` | `1575498` | `0` | `0` |
 | `large_random_buffer` | `2048` | `1854248` | `1854267.0` | `1854295` | `0` | `0` |
 
-## 观察
+## Observations
 
-- 两条架构在最近 3 次正式窗口里都做到：
-  - `8 / 8` case 全通过
+- In the latest 3 formal windows, both architectures achieved:
+  - `8 / 8` cases passed
   - `mismatch_sum = 0`
   - `error_status_count = 0`
-- cycle 数在 run-to-run 间只有很小波动，符合 JTAG 下载、PS 启动与 DMA 调度带来的正常抖动
-- `passband_edge_sine` 与 `transition_sine` 现在已经进入正式板测集合，这意味着：
-  - 板上验证不再只看 impulse / step / random
-  - 频域边缘行为已经从 MATLAB/RTL 链延伸到板上系统闭环
+- The cycle count varies only slightly from run to run, which is consistent with normal jitter from JTAG download, PS startup, and DMA scheduling
+- `passband_edge_sine` and `transition_sine` are now part of the formal board-validation set, which means:
+  - On-board validation no longer checks only impulse / step / random
+  - Edge-of-band frequency behavior has now been extended from the MATLAB/RTL chain into the full on-board system closure
 
-## 说明
+## Notes
 
-- 历史全量 run 仍保留在 `data/board_runs/`
-- 历史全量统计在：
+- The complete historical run set remains under `data/board_runs/`
+- Full historical statistics are in:
   - `data/analysis/board_stability_arch.csv`
   - `data/analysis/board_stability_cases.csv`
-- 正式报告建议优先引用本页对应的最近窗口统计，因为它反映的是**当前最终 harness 与当前正式用例集**，而不是早期调试阶段的混合状态
+- Formal reporting should prefer the recent-window statistics on this page because they reflect the **current final harness and the current formal case suite**, rather than a mixed state that includes early debug runs

@@ -1,25 +1,25 @@
-# Testbench 说明
+# Testbench Notes
 
-## 标量 testbench
+## Scalar Testbench
 
-- 文件：`tb/tb_fir_scalar.sv`
-- 默认 DUT：`fir_symm_base`
-- 可通过宏切换 DUT，例如：
+- File: `tb/tb_fir_scalar.sv`
+- Default DUT: `fir_symm_base`
+- The DUT can be switched with macros, for example:
   - `xvlog -sv -d DUT_PIPE ... tb/tb_fir_scalar.sv`
-- 推荐直接使用：
+- Recommended direct usage:
   - `powershell -ExecutionPolicy Bypass -File scripts/run_scalar_regression.ps1 -Dut base -Case impulse`
   - `powershell -ExecutionPolicy Bypass -File scripts/run_scalar_regression.ps1 -Dut pipe -Case step`
   - `powershell -ExecutionPolicy Bypass -File scripts/run_scalar_regression.ps1 -Dut pipe -Case random_short`
 
-## 向量 testbench
+## Vector Testbench
 
-- 文件：`tb/tb_fir_vector.sv`
-- 默认 DUT：`fir_l2_polyphase`
-- 可通过宏切换 DUT 与 lane 数，例如：
+- File: `tb/tb_fir_vector.sv`
+- Default DUT: `fir_l2_polyphase`
+- The DUT and lane count can be switched with macros, for example:
   - `xvlog -sv ... tb/tb_fir_vector.sv`
   - `xvlog -sv -d DUT_L3 ... tb/tb_fir_vector.sv`
   - `xvlog -sv -d DUT_L3_PIPE ... tb/tb_fir_vector.sv`
-- 推荐直接使用：
+- Recommended direct usage:
   - `powershell -ExecutionPolicy Bypass -File scripts/run_vector_regression.ps1 -Dut l2 -Case impulse`
   - `powershell -ExecutionPolicy Bypass -File scripts/run_vector_regression.ps1 -Dut l2 -Case lane_alignment`
   - `powershell -ExecutionPolicy Bypass -File scripts/run_vector_regression.ps1 -Dut l3 -Case random_short`
@@ -30,18 +30,18 @@
 - `+INPUT_FILE=<path>`
 - `+GOLDEN_FILE=<path>`
 
-默认 case 为 `vectors/impulse/`。
-若从 `build/sim/...` 目录运行，testbench 会优先查找 staged 向量；若找不到，再回退到仓库根目录路径。
+The default case is `vectors/impulse/`.
+If run from a `build/sim/...` directory, the testbench will first search for staged vectors; if they are not found, it falls back to the repository-root paths.
 
-当前 testbench 会在 `readmemh` 后自动统计输入帧数与黄金输出帧数，因此通常不再需要额外传 `+INPUT_LEN`。
+The current testbench automatically counts input frames and golden output frames after `readmemh`, so passing an additional `+INPUT_LEN` is usually no longer necessary.
 
-## 当前最小回归集合
+## Current Minimum Regression Set
 
-- 标量：
+- Scalar:
   - `impulse`
   - `step`
   - `random_short`
-- 向量：
+- Vector:
   - `impulse`
   - `step`
   - `random_short`

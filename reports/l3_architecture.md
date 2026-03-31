@@ -1,35 +1,35 @@
 # L=3 Architecture
 
-## 架构定义
+## Architecture Definition
 
-当前 `fir_l3_polyphase` 已替换原先的参考内核，成为真实 `3-parallel polyphase` datapath。
+The current `fir_l3_polyphase` has replaced the old reference kernel and become a true `3-parallel polyphase` datapath.
 
-系数分解为：
+The coefficients are decomposed as:
 
-- `E0[k] = h[3k]`，长度 `87`
-- `E1[k] = h[3k+1]`，长度 `87`
-- `E2[k] = h[3k+2]`，长度 `87`
+- `E0[k] = h[3k]`, length `87`
+- `E1[k] = h[3k+1]`, length `87`
+- `E2[k] = h[3k+2]`, length `87`
 
-本阶段的对称性利用策略为：
+The symmetry-utilization strategy at this stage is:
 
-- `E1` 内部仍保持对称折叠，唯一乘法器 `44`
-- `E0` 与 `E2` 是跨分支镜像，但本阶段不做跨分支共享，各自按 full branch 实现
+- `E1` still keeps symmetry folding internally, with `44` unique multipliers
+- `E0` and `E2` are cross-branch mirrors, but this stage does not share them across branches, so each is implemented as a full branch
 
-输入重排为：
+The input rearrangement is:
 
 - `x0[m] = x[3m]`
 - `x1[m] = x[3m+1]`
 - `x2[m] = x[3m+2]`
 
-输出矩阵为：
+The output matrix is:
 
 - `y0[m] = E0*x0 + z^-1(E1*x2 + E2*x1)`
 - `y1[m] = E0*x1 + E1*x0 + z^-1(E2*x2)`
 - `y2[m] = E0*x2 + E1*x1 + E2*x0`
 
-## 运算量
+## Operation Count
 
-| 项目 | 数值 |
+| Item | Value |
 | --- | ---: |
 | taps | 261 |
 | samples/cycle | 3 |
@@ -37,40 +37,40 @@
 | unique multipliers per branch family | `87 / 44 / 87` |
 | total branch instances | 9 |
 | effective branch multipliers in current RTL | `3*87 + 3*44 + 3*87 = 654` |
-| delayed matrix terms | `E1*x2`、`E2*x1`、`E2*x2` |
-| rounding位置 | 仅在最终 lane 合成后 |
+| delayed matrix terms | `E1*x2`, `E2*x1`, `E2*x2` |
+| rounding position | only after final lane recombination |
 | latency_cycles | 1 |
 
-## 回归状态
+## Regression Status
 
-- `impulse`：PASS
-- `step`：PASS
-- `random_short`：PASS
-- `lane_alignment_l3`：PASS
+- `impulse`: PASS
+- `step`: PASS
+- `random_short`: PASS
+- `lane_alignment_l3`: PASS
 
-## 当前器件结果
+## Current Device Results
 
-目标器件：`xc7z020clg400-2`
+Target device: `xc7z020clg400-2`
 
-综合与 `opt_design` 可以完成，但 `place_design` 前的 DRC 已经报出资源超限：
+Synthesis and `opt_design` can complete, but DRC before `place_design` already reports resource overflow:
 
-- `CARRY4` 需求 `26769`，器件仅 `13300`
-- `LUT as Logic` 需求 `77369`，器件仅 `53200`
+- `CARRY4` demand `26769`, while the device only has `13300`
+- `LUT as Logic` demand `77369`, while the device only has `53200`
 
-这说明当前版本已经足够证明：
+This is enough to prove that the current version already has:
 
-- lane 调度正确
-- polyphase 数学正确
-- RTL 可综合
+- correct lane scheduling
+- correct polyphase math
+- synthesizable RTL
 
-但它还不是当前器件上的最终比赛级实现。
+But it is still not the final competition-grade implementation on the current device.
 
-## 结论
+## Conclusions
 
-- 这条线已经从“参考内核”升级成了“真实 polyphase datapath”
-- 当前 non-FFA 实现能验证架构与回归链，但不适合直接作为 `xc7z020` 的最终 hero design
-- 下一轮真正有价值的优化方向是：
+- This path has been upgraded from a “reference kernel” to a “true polyphase datapath”
+- The current non-FFA implementation is enough to validate the architecture and regression chain, but it is not suitable as the final hero design on `xc7z020`
+- The next truly valuable optimization directions are:
   - `FFA`
-  - `E0 / E2` 跨分支共享
-  - matrix network 压缩
-  - 或迁移到更大器件
+  - cross-branch sharing between `E0 / E2`
+  - matrix-network compression
+  - or migration to a larger device

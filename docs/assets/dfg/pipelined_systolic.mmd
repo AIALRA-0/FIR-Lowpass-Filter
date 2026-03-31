@@ -1,7 +1,10 @@
 flowchart LR
     IN[Input sample] --> DL[Delay line]
-    DL --> PRE[Pre-add stage]
-    PRE --> MUL[Multiplier stage]
-    MUL --> DLY[Per-tap product delays]
-    DLY --> ACC[Systolic accumulator chain]
-    ACC --> OUT[Output]
+    DL --> PRE[Symmetric pre-add]
+    PRE --> DSP0[DSP stage 0]
+    COEF[Coeff / tap regs] --> DSP0
+    DSP0 --> REG0[Pipe regs]
+    REG0 --> DSPK[DSP stage 1..k]
+    DSPK --> ACC[Systolic accum chain]
+    ACC --> QS[Round / Saturate]
+    QS --> OUT[Output]

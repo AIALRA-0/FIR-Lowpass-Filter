@@ -1,68 +1,68 @@
 # Methodology Summary
 
-本页把当前项目最容易分散在脚本和日志里的“比较口径”集中起来，避免后续报告只剩结论而没有方法说明。
+This page consolidates the “comparison framing” that is otherwise easy to scatter across scripts and logs, so later reports do not end up with conclusions but no explanation of method.
 
-## 设计与量化口径
+## Design and Quantization Framing
 
-- 规格真源：`spec/spec.json`
-- 滤波器类型：低通、线性相位 FIR
-- 频率边界：`wp = 0.2`、`ws = 0.23`
-- 阻带指标：`Ast >= 80 dB`
-- 题目歧义处理：同时保留 `baseline_taps100` 与 `baseline_order100`
-- 主设计方法：`firpm`
-- 最终浮点设计：`order = 260`、`261 taps`
-- 默认固定点：`Q1.15 + Wcoef20 + Wout16 + Wacc46`
-- 内部策略：full precision accumulate，末级统一 `round + saturate`
+- Specification source of truth: `spec/spec.json`
+- Filter type: low-pass, linear-phase FIR
+- Frequency boundaries: `wp = 0.2`, `ws = 0.23`
+- Stopband requirement: `Ast >= 80 dB`
+- Ambiguity handling in the assignment: keep both `baseline_taps100` and `baseline_order100`
+- Main design method: `firpm`
+- Final floating-point design: `order = 260`, `261 taps`
+- Default fixed-point format: `Q1.15 + Wcoef20 + Wout16 + Wacc46`
+- Internal policy: full-precision accumulate, unified final-stage `round + saturate`
 
-## RTL 回归口径
+## RTL Regression Framing
 
-| Scope | 入口脚本 | DUT | 用例 |
+| Scope | Entry Script | DUT | Cases |
 | --- | --- | --- | --- |
-| 标量 bit-true | `scripts/run_scalar_regression.ps1` | `fir_symm_base`、`fir_pipe_systolic` | `impulse`、`step`、`random_short` |
-| 向量 bit-true | `scripts/run_vector_regression.ps1` | `fir_l2_polyphase`、`fir_l3_polyphase`、`fir_l3_pipe` | `impulse`、`step`、`random_short`、`lane_alignment`、`passband_edge`、`transition`、`stopband`、`multitone`、`overflow_corner` |
-| 黄金向量生成 | `matlab/vectors/gen_vectors.m` 或 `scripts/regenerate_vectors.py` | 全部 RTL/board 用例共享 | 标量、`L=2`、`L=3` 全部从同一套 fixed-point 系数导出 |
+| scalar bit-true | `scripts/run_scalar_regression.ps1` | `fir_symm_base`, `fir_pipe_systolic` | `impulse`, `step`, `random_short` |
+| vector bit-true | `scripts/run_vector_regression.ps1` | `fir_l2_polyphase`, `fir_l3_polyphase`, `fir_l3_pipe` | `impulse`, `step`, `random_short`, `lane_alignment`, `passband_edge`, `transition`, `stopband`, `multitone`, `overflow_corner` |
+| golden-vector generation | `matlab/vectors/gen_vectors.m` or `scripts/regenerate_vectors.py` | shared by all RTL/board cases | scalar, `L=2`, and `L=3` all exported from the same fixed-point coefficients |
 
-## 综合与实现口径
+## Synthesis and Implementation Framing
 
-| 项目 | 设置 |
+| Item | Setting |
 | --- | --- |
-| 工具 | `Vivado 2024.1` |
-| 主器件 | `xczu4ev-sfvc784-2-i` |
-| kernel scope 目标周期 | `3.333 ns` |
-| board-shell scope 当前时钟 | `3.750 ns` |
-| 结果真源 | `data/impl_results.csv` |
-| 功耗口径 | routed `report_power`，当前为 vectorless |
-| 功耗可信度 | `Medium` |
-| 比较方式 | 分开报告 `kernel scope` 与 `board-shell scope` |
+| Tool | `Vivado 2024.1` |
+| Main device | `xczu4ev-sfvc784-2-i` |
+| kernel-scope target period | `3.333 ns` |
+| board-shell-scope current clock | `3.750 ns` |
+| Result source of truth | `data/impl_results.csv` |
+| Power framing | routed `report_power`, currently vectorless |
+| Power confidence | `Medium` |
+| Comparison method | report `kernel scope` and `board-shell scope` separately |
 
-## 板级自动化闭环口径
+## Board-Level Automation Closure Framing
 
-| 阶段 | 工具/脚本 | 作用 |
+| Stage | Tool/Script | Purpose |
 | --- | --- | --- |
-| Preflight | `scripts/check_jtag_stack.ps1` | 确认 `xczu4`、`arm_dap`、`COM9 / CP210x` |
-| App build | `scripts/build_zu4ev_app.ps1` | 导出 `.xsa`、生成 bare-metal app、保存 `build_info.json` |
-| Programming | `scripts/program_zu4ev.ps1` + XSCT/JTAG | 自动下载 bitstream + ELF |
-| UART capture | `scripts/capture_uart.py` | 自动抓取 case 日志并判定 `PASS/FAIL` |
-| Closure | `scripts/run_zu4ev_closure.ps1` | 串联 preflight、build、program、capture、collect |
+| Preflight | `scripts/check_jtag_stack.ps1` | confirm `xczu4`, `arm_dap`, `COM9 / CP210x` |
+| App build | `scripts/build_zu4ev_app.ps1` | export `.xsa`, generate bare-metal app, save `build_info.json` |
+| Programming | `scripts/program_zu4ev.ps1` + XSCT/JTAG | automatically download bitstream + ELF |
+| UART capture | `scripts/capture_uart.py` | automatically capture case logs and decide `PASS/FAIL` |
+| Closure | `scripts/run_zu4ev_closure.ps1` | chain preflight, build, program, capture, and collection |
 
-## 当前正式板测套件
+## Current Formal Board-Validation Suite
 
-| Case | 长度 | 目的 |
+| Case | Length | Purpose |
 | --- | ---: | --- |
-| `impulse` | `1024` | 核对冲激响应与系数序列 |
-| `step` | `1024` | 检查 DC 收敛与稳态 |
-| `random_short` | `1024` | 低成本随机 bit-true smoke |
-| `passband_edge_sine` | `1024` | 检查通带边缘幅度保持 |
-| `transition_sine` | `1024` | 检查过渡带抑制趋势 |
-| `multitone` | `2048` | 检查多音叠加下的整体行为 |
-| `stopband_sine` | `1024` | 检查阻带抑制 |
-| `large_random_buffer` | `2048` | 长 buffer 下 DMA + FIR 稳定性 |
+| `impulse` | `1024` | check impulse response and coefficient sequence |
+| `step` | `1024` | check DC convergence and steady state |
+| `random_short` | `1024` | low-cost random bit-true smoke |
+| `passband_edge_sine` | `1024` | check passband-edge magnitude preservation |
+| `transition_sine` | `1024` | check transition-band suppression trend |
+| `multitone` | `2048` | check overall behavior under multitone superposition |
+| `stopband_sine` | `1024` | check stopband suppression |
+| `large_random_buffer` | `2048` | check DMA + FIR stability under long buffers |
 
-## 当前正式比较口径
+## Current Formal Comparison Framing
 
-- `kernel scope`：只比较 FIR RTL 内核本体，不掺入 PS/DMA/UART 开销。
-- `board-shell scope`：比较 `PS + AXI DMA + FIR shell + bare-metal harness` 的最终系统。
-- 板上正式收尾对象固定为两条：
+- `kernel scope`: compare only the FIR RTL kernels themselves, without PS/DMA/UART overhead.
+- `board-shell scope`: compare the final `PS + AXI DMA + FIR shell + bare-metal harness` system.
+- The formal on-board endgame targets are fixed to:
   - `fir_pipe_systolic`
   - `vendor_fir_ip`
-- `L=2 / L=3` 仍然保留在实现矩阵与分析章节中，但当前不上板作为最终收尾主角。
+- `L=2 / L=3` remain in the implementation matrix and analysis chapters, but are currently not the final on-board endgame protagonists.

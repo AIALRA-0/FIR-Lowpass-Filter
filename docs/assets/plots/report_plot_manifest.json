@@ -1,11 +1,15 @@
 {
   "generated_plots": [
+    "order_vs_ast.png",
+    "weight_tradeoff.png",
+    "freqresp_float_compare.png",
     "resource_vs_throughput.png",
     "power_vs_throughput.png",
     "route_vs_logic_delay.png",
     "board_shell_power_breakdown.png",
     "board_validation_cycles.png",
     "freqresp_quantized_compare.png",
-    "coef_width_vs_ast.png"
+    "coef_width_vs_ast.png",
+    "method_choice_min_taps.png"
   ]
 }

@@ -1,11 +1,11 @@
 # Synthesis Summary
 
-当前实现结果分成两个明确口径：
+The current implementation results are split into two explicit framings:
 
-- `kernel scope`：五个自研 RTL 内核的公平比较
-- `board-shell scope`：最终 `PS + AXI DMA + FIR shell + bare-metal harness` 系统对照
+- `kernel scope`: fair comparison among the five custom RTL kernels
+- `board-shell scope`: final system comparison for `PS + AXI DMA + FIR shell + bare-metal harness`
 
-这种分层是必要的，因为如果把两类数字混在一起，PS8 和 DMA 的固定开销会掩盖 FIR 核本体差异。
+This separation is necessary because if both kinds of numbers are mixed together, the fixed overhead of PS8 and DMA will hide the differences among the FIR kernels themselves.
 
 ## Kernel Scope
 
@@ -17,15 +17,15 @@
 | `fir_l3_polyphase` | `l3_polyphase` | `127.129` | `381.388` | `34687` | `6914` | `175` | `3.484` | `9.135` |
 | `fir_l3_pipe` | `l3_pipeline` | `121.095` | `363.284` | `34786` | `7199` | `175` | `3.545` | `9.758` |
 
-## Kernel Scope 归一化效率
+## Normalized Efficiency in Kernel Scope
 
-| Top | Throughput/DSP | Throughput/kLUT | Throughput/W | 备注 |
+| Top | Throughput/DSP | Throughput/kLUT | Throughput/W | Notes |
 | --- | ---: | ---: | ---: | --- |
-| `fir_symm_base` | `1.008` | `45.219` | `144.392` | 面积极小，但频率和能效都被流水线版超越 |
-| `fir_pipe_systolic` | `3.480` | `27.486` | `262.935` | 当前自研 `performance hero` 与 `efficiency hero` |
-| `fir_l2_polyphase` | `1.064` | `47.489` | `209.840` | LUT 利用效率很强，但 DSP 代价偏大 |
-| `fir_l3_polyphase` | `2.179` | `10.995` | `109.468` | 吞吐高，但 LUT 与功耗代价明显 |
-| `fir_l3_pipe` | `2.076` | `10.443` | `102.478` | 深流水线没有换来能效优势 |
+| `fir_symm_base` | `1.008` | `45.219` | `144.392` | Extremely small area, but both frequency and energy efficiency are surpassed by the pipelined version |
+| `fir_pipe_systolic` | `3.480` | `27.486` | `262.935` | The current custom `performance hero` and `efficiency hero` |
+| `fir_l2_polyphase` | `1.064` | `47.489` | `209.840` | Strong LUT utilization efficiency, but a relatively high DSP cost |
+| `fir_l3_polyphase` | `2.179` | `10.995` | `109.468` | High throughput, but clearly higher LUT and power cost |
+| `fir_l3_pipe` | `2.076` | `10.443` | `102.478` | The deeper pipeline did not produce an energy-efficiency advantage |
 
 ## Board-Shell Scope
 
@@ -34,44 +34,44 @@
 | `zu4ev_fir_pipe_systolic_top` | `board_shell_custom` | `347.826` | `347.826` | `20253` | `21909` | `132` | `3.0` | `2.971` | `8.542` |
 | `zu4ev_fir_vendor_top` | `board_shell_vendor_ip` | `347.102` | `347.102` | `8856` | `13428` | `131` | `3.0` | `2.861` | `8.243` |
 
-## Board-Shell Scope 归一化效率
+## Normalized Efficiency in Board-Shell Scope
 
-| Top | Throughput/DSP | Throughput/kLUT | Throughput/W | 备注 |
+| Top | Throughput/DSP | Throughput/kLUT | Throughput/W | Notes |
 | --- | ---: | ---: | ---: | --- |
-| `zu4ev_fir_pipe_systolic_top` | `2.635` | `17.174` | `117.074` | 自研 shell 保持了与 vendor 几乎相同的系统频率 |
-| `zu4ev_fir_vendor_top` | `2.650` | `39.194` | `121.322` | 当前系统层资源与能效基线赢家 |
+| `zu4ev_fir_pipe_systolic_top` | `2.635` | `17.174` | `117.074` | The custom shell keeps almost the same system frequency as the vendor version |
+| `zu4ev_fir_vendor_top` | `2.650` | `39.194` | `121.322` | The current winner for system-level resource efficiency and energy efficiency |
 
-## 当前结论
+## Current Conclusions
 
-- `fir_pipe_systolic` 是当前自研 RTL 矩阵中的 `performance hero`
-  - 最高 `Fmax`
-  - 最高 `throughput`
-  - 最低 `energy/sample`
-  - 最好的 `throughput/DSP`
-- `fir_l2_polyphase` 已证明真正的 `polyphase + symmetry` RTL 能进入完整实现链
-  - 但当前更像高吞吐 / 高 DSP 消耗的中间解
-- `fir_l3_polyphase` 与 `fir_l3_pipe` 已经从“能不能放下”进化到“值不值得”
-  - 它们的吞吐已经具备展示价值
-  - 但当前还没有赢过高质量标量流水线
-- `vendor FIR IP` 是当前 `board-shell scope` 下的工业基线赢家
-  - 与自研系统壳几乎相同的频率
-  - 更低的 LUT / FF
-  - 略低的 `power` 与 `energy/sample`
+- `fir_pipe_systolic` is the `performance hero` in the current custom RTL matrix
+  - highest `Fmax`
+  - highest `throughput`
+  - lowest `energy/sample`
+  - best `throughput/DSP`
+- `fir_l2_polyphase` has proven that true `polyphase + symmetry` RTL can enter the full implementation chain
+  - but at the moment it looks more like an intermediate high-throughput / high-DSP-cost solution
+- `fir_l3_polyphase` and `fir_l3_pipe` have evolved from “can they fit” into “are they worth it”
+  - their throughput is already high enough to be presentation-worthy
+  - but they still do not beat a high-quality scalar pipeline
+- `vendor FIR IP` is the current industrial-baseline winner under `board-shell scope`
+  - almost the same frequency as the custom system shell
+  - lower LUT / FF
+  - slightly lower `power` and `energy/sample`
 
-## 时序与功耗说明
+## Timing and Power Notes
 
-- 当前目标器件：`xczu4ev-sfvc784-2-i`
-- kernel scope 默认目标周期：`3.333 ns`
-- board-shell 当前 PL 时钟：`3.750 ns`
-- 当前功耗来自 routed vectorless `report_power`
+- Current target device: `xczu4ev-sfvc784-2-i`
+- Default kernel-scope target period: `3.333 ns`
+- Current board-shell PL clock: `3.750 ns`
+- Current power numbers come from routed vectorless `report_power`
 - `Confidence Level = Medium`
 
-因此，当前功耗数字应理解为：
+Therefore, the current power numbers should be interpreted as:
 
-- **非常适合做相对比较**
-- **不应被当作最终 sign-off 绝对功耗**
+- **very suitable for relative comparison**
+- **not suitable as final sign-off absolute power**
 
-更详细的关键路径、功耗分层和路由解释见：
+More detailed critical-path, power-breakdown, and routing explanations are in:
 
 - `reports/timing_power_analysis.md`
 - `data/analysis/power_breakdown.csv`

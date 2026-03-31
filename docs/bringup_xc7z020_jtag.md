@@ -1,66 +1,66 @@
 # 7z020 JTAG Bring-Up
 
-本页把 `xc7z020clg400-2` 开发板的 JTAG 上板链路和当前主机检测结果整理成可复跑的流程。
+This page organizes the JTAG board-bring-up chain for the `xc7z020clg400-2` development board and the current host-side detection results into a repeatable flow.
 
-## 板卡事实
+## Board Facts
 
-- `CH340 / COM7` 是 `USB-UART`，不承担 JTAG。
-- JTAG 走底板独立 `14-pin` 接口；资料说明该口与核心板 `6-pin JTAG` 硬连通。
-- 当前工程默认目标板为 `xc7z020clg400-2`。
-- JTAG 启动模式按板卡资料固定为：
+- `CH340 / COM7` is `USB-UART` and does not carry JTAG.
+- JTAG uses the separate `14-pin` connector on the baseboard; the documentation states that this port is hard-wired to the core board's `6-pin JTAG`.
+- The current project's default target board is `xc7z020clg400-2`.
+- According to the board documentation, the fixed JTAG boot mode is:
   - `BOOT_MODE0 = ON`
   - `BOOT_MODE1 = ON`
 
-## 当前机器侧结论
+## Current Host-Side Conclusion
 
-- Windows 能看到：
+- Windows can see:
   - `USB-SERIAL CH340 (COM7)`
-  - 两个 `VID_0403&PID_6014` FTDI 设备
-- `pnputil` 显示 Digilent 与 Xilinx cable driver 均已安装。
-- 当前 `hw_server` 能枚举到两个 Digilent target：
+  - two `VID_0403&PID_6014` FTDI devices
+- `pnputil` shows that both Digilent and Xilinx cable drivers are installed.
+- The current `hw_server` can enumerate two Digilent targets:
   - `210299BBCF40`
   - `210512180081`
-- 但 `open_hw_target` 对两条 target 都报 `No devices detected on target ...`
+- But `open_hw_target` reports `No devices detected on target ...` for both targets
 
-这意味着当前的主阻塞已经不是“Vivado 完全看不到下载线”，而是“下载线可见，但 JTAG 链上没有读到器件 IDCODE”。
+This means the main blocker is no longer “Vivado cannot see the download cable at all,” but rather “the download cable is visible, yet no device IDCODE is being read on the JTAG chain.”
 
-## 先跑脚本
+## Run the Script First
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/check_jtag_stack.ps1
 ```
 
-脚本会输出：
+The script outputs:
 
 - [jtag_status.json](/c:/Users/AIALRA-PORTABLE/Desktop/Project%201/data/hardware/jtag_status.json)
 - [jtag_status.md](/c:/Users/AIALRA-PORTABLE/Desktop/Project%201/reports/jtag_status.md)
 
-## 推荐排障顺序
+## Recommended Troubleshooting Order
 
-1. 先隔离线缆。
-只保留 7z020 的 14-pin 下载线，拔掉其他 FTDI/Digilent 线，再重跑脚本，确认哪一个 serial 才是当前目标板。
+1. Isolate the cables first.
+Keep only the 14-pin cable for the 7z020, unplug any other FTDI/Digilent cables, and rerun the script to confirm which serial belongs to the current target board.
 
-2. 再确认物理连接。
-重点检查 14-pin JTAG 线方向、Pin 1 对位、底板 JTAG 口是否插实、核心板是否坐稳。
+2. Reconfirm the physical connection.
+Focus on the 14-pin JTAG cable orientation, Pin 1 alignment, whether the baseboard JTAG connector is fully inserted, and whether the core board is firmly seated.
 
-3. 再确认启动模式和供电。
-确保板子已接 `12V`、上电稳定，且 `BOOT_MODE0/1` 为 JTAG 模式。
+3. Reconfirm boot mode and power.
+Make sure the board is powered by `12V`, is stably powered on, and that `BOOT_MODE0/1` are set to JTAG mode.
 
-4. 再验证 Hardware Manager。
-如果脚本已经能看到 target，但 `device_count=0`，不要先折腾 CH340，也不要先假设是 Vivado 版本问题；优先把问题当成 JTAG 链本身没有器件响应。
+4. Recheck Hardware Manager.
+If the script can already see the target but `device_count=0`, do not start with CH340 troubleshooting and do not assume a Vivado version issue first; prioritize the possibility that the JTAG chain itself is not returning a device response.
 
-5. 最后才考虑驱动重装。
-只有当 `hw_server` 连 target 都枚举不到时，才把驱动绑定重新提到最高优先级。
+5. Consider driver reinstall only at the end.
+Only raise driver rebinding to top priority when `hw_server` cannot enumerate the target at all.
 
-## 建议的上板顺序
+## Suggested Board-Bring-Up Order
 
-1. 先用极简 smoke design 或已经稳定的 `fir_pipe_systolic` bitstream。
-2. 确认能读到器件、能下载 bitstream。
-3. 再切换到 FIR 实验 bitstream。
+1. Start with a minimal smoke design or a known-stable `fir_pipe_systolic` bitstream.
+2. Confirm that the device can be read and that the bitstream can be downloaded.
+3. Then switch to the FIR experiment bitstream.
 
-## 当前项目语境下的结论
+## Conclusion in the Current Project Context
 
-- `L3` 的 RTL 与实现问题已经和 JTAG 链路解耦。
-- 当前 7z020 的工程主阻塞是：
-  - FIR 侧：`L3` 已能 fit，但时序太差，尚未达到 hero 吞吐门槛。
-  - 上板侧：`hw_server` 能看到下载线，但 JTAG target 读不到器件。
+- The RTL and implementation issues of `L3` are already decoupled from the JTAG chain.
+- The current main blockers for the 7z020 flow are:
+  - FIR side: `L3` can now fit, but timing is still too poor to reach the hero-throughput target.
+  - Board side: `hw_server` can see the download cable, but the JTAG target cannot read the device.

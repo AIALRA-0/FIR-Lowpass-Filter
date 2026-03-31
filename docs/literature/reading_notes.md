@@ -1,26 +1,25 @@
-# 阅读笔记
+# Reading Notes
 
 ## MathWorks FIR Filter Design
 
-- `firpm` 适合作为主设计路线，因为它以 minimax/equiripple 为核心
-- 线性相位 FIR 的对称系数可直接转化为硬件折叠乘法器
-- 固定系数数目时，过渡带与阻带衰减之间需要 tradeoff
+- `firpm` is a good main design path because it is centered on minimax/equiripple optimization
+- Symmetric coefficients in a linear-phase FIR can be converted directly into folded hardware multipliers
+- With a fixed coefficient count, the transition band and stopband attenuation must trade off against each other
 
 ## MathWorks Fixed-Point Filter Design
 
-- 即使中间乘加 full precision，系数量化也会改变频率响应
-- 溢出、舍入噪声和最终输出位宽需要分开建模
-- bit-true 向量是连接 MATLAB 与 RTL 的关键
+- Even with full-precision internal MACs, coefficient quantization still changes the frequency response
+- Overflow, rounding noise, and final output width must be modeled separately
+- bit-true vectors are the key bridge between MATLAB and RTL
 
 ## AMD FIR Compiler / DSP48E1
 
-- 对称系数与 pre-adder 非常适合低通线性相位 FIR
-- systolic/pipelined direct form 更贴近 DSP slice 级联
-- transpose 可低延迟，但不是本项目主线
+- Symmetric coefficients and the pre-adder are very well matched to low-pass linear-phase FIR
+- Systolic/pipelined direct form maps more naturally onto DSP-slice cascading
+- Transpose can offer lower latency, but it is not the mainline path of this project
 
-## Polyphase / Parallel 文献
+## Polyphase / Parallel Literature
 
-- 并行不是复制多条 FIR，而是重构数据流与子滤波器
-- `L=2` 和 `L=3` 的价值在于同时提升吞吐并尽量保留 symmetry
-- `L=3 + pipeline` 是否最终胜出，由综合结果决定
-
+- Parallelism is not simply replicating multiple FIR filters; it is restructuring the dataflow and subfilters
+- The value of `L=2` and `L=3` is to raise throughput while preserving symmetry as much as possible
+- Whether `L=3 + pipeline` ultimately wins must be decided by synthesis results

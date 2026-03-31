@@ -1,5 +1,7 @@
 flowchart LR
     IN[Input sample] --> DL[Delay line]
-    DL --> MUL[Tap multipliers]
-    MUL --> ACC[Full adder chain]
-    ACC --> OUT[Output]
+    DL --> MUL[261 tap multipliers]
+    COEF[Coeff ROM] --> MUL
+    MUL --> ACC[Full adder tree]
+    ACC --> QS[Round / Saturate]
+    QS --> OUT[Output]

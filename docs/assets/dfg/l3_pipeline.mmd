@@ -1,5 +1,11 @@
 flowchart LR
-    IN[3-lane input] --> PRE[Pre-process pipeline]
-    PRE --> SUB[Polyphase subfilters]
-    SUB --> POST[Post-process pipeline]
-    POST --> OUT[3-lane output]
+    IN[3-lane block input] --> INREG[Input regs]
+    INREG --> E0[Phase branch E0]
+    INREG --> E1[Phase branch E1]
+    INREG --> E2[Phase branch E2]
+    E0 --> BREG[Branch output regs]
+    E1 --> BREG
+    E2 --> BREG
+    BREG --> RREG[Recombine regs]
+    RREG --> QS[Round / Saturate]
+    QS --> OUT[3-lane output]

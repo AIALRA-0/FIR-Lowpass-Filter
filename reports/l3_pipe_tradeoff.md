@@ -1,47 +1,47 @@
 # L=3 + Pipeline Tradeoff
 
-## 目标
+## Goal
 
-`fir_l3_pipe` 不再是简单的“外面包一级寄存器”，而是在 `fir_l3_polyphase` 数学完全不变的前提下，对三处关键位置插入流水线：
+`fir_l3_pipe` is no longer a simple “one more register wrapped around the outside.” Instead, while keeping the math of `fir_l3_polyphase` exactly unchanged, it inserts pipeline cuts at three key points:
 
-- 输入 lane capture
-- subfilter outputs 到矩阵加法之间
-- 最终矩阵加法到 `round_sat` 之间
+- input lane capture
+- between subfilter outputs and the matrix adder
+- between the final matrix adder and `round_sat`
 
-## 当前实现
+## Current Implementation
 
-当前版本与 `fir_l3_polyphase` 的关系是：
+The current version relates to `fir_l3_polyphase` as follows:
 
-- 数值路径相同
-- 向量回归结果完全一致
-- 仅 latency 增加
+- identical numerical path
+- fully identical vector-regression results
+- increased latency only
 
-固定差异：
+The fixed differences are:
 
-| 指标 | `fir_l3_polyphase` | `fir_l3_pipe` |
+| Metric | `fir_l3_polyphase` | `fir_l3_pipe` |
 | --- | ---: | ---: |
 | samples/cycle | 3 | 3 |
 | latency_cycles | 1 | 3 |
 | numerical result | bit-exact | bit-exact |
 
-## 回归状态
+## Regression Status
 
-- `impulse`：PASS
-- `step`：PASS
-- `random_short`：PASS
-- `lane_alignment_l3`：PASS
+- `impulse`: PASS
+- `step`: PASS
+- `random_short`: PASS
+- `lane_alignment_l3`: PASS
 
-## 当前器件结果
+## Current Device Results
 
-在 `xc7z020clg400-2` 上，`fir_l3_pipe` 与 `fir_l3_polyphase` 一样在 `place_design` 前被资源检查挡住：
+On `xc7z020clg400-2`, `fir_l3_pipe`, just like `fir_l3_polyphase`, is blocked by resource checks before `place_design`:
 
-- `CARRY4` 需求 `26769`，器件仅 `13300`
-- `LUT as Logic` 需求 `77385`，器件仅 `53200`
+- `CARRY4` demand `26769`, while the device only has `13300`
+- `LUT as Logic` demand `77385`, while the device only has `53200`
 
-这说明目前的 pipeline 插入还不足以改变“当前 non-FFA L3 数学展开过大”的本质问题。
+This shows that the current pipeline insertion is still insufficient to change the underlying problem that the current non-FFA `L3` mathematical expansion is too large.
 
-## 结论
+## Conclusions
 
-- `fir_l3_pipe` 已完成“真实 pipeline 版本”的功能闭环
-- 但在当前器件上，主矛盾不是关键路径，而是数学展开导致的总体逻辑体积
-- 因此下一轮若继续优化 `L=3`，优先级应是压缩运算图，而不是继续堆寄存器
+- `fir_l3_pipe` has completed the functional closure of a true pipelined version
+- But on the current device, the main contradiction is not the critical path; it is the overall logic volume caused by the mathematical expansion
+- Therefore, if the next optimization round continues on `L=3`, the priority should be compressing the computation graph rather than continuing to add registers

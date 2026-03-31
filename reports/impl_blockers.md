@@ -1,20 +1,20 @@
 # Implementation Closure
 
-## 当前状态
+## Current Status
 
-原先这里记录的两个系统级阻塞都已经关闭：
+The two system-level blockers originally recorded here have both been closed:
 
-- `vendor FIR IP` 已加入最终对照
-- `PS + PL` 系统壳已经完成 bare-metal 端到端验证
+- `vendor FIR IP` has been added to the final comparison
+- The `PS + PL` system shell has completed bare-metal end-to-end validation
 
-## 已确认的现象
+## Confirmed Observations
 
-- `fir_l3_polyphase`：已完成 ZU4EV `place_design` 与 `route_design`
-- `fir_l3_pipe`：已完成 ZU4EV `place_design` 与 `route_design`
-- `zu4ev_fir_pipe_systolic_top`：已完成 bitstream、`.xsa` 与板上闭环
-- `zu4ev_fir_vendor_top`：已完成 bitstream、`.xsa` 与板上闭环
+- `fir_l3_polyphase`: completed ZU4EV `place_design` and `route_design`
+- `fir_l3_pipe`: completed ZU4EV `place_design` and `route_design`
+- `zu4ev_fir_pipe_systolic_top`: completed bitstream, `.xsa`, and on-board closure
+- `zu4ev_fir_vendor_top`: completed bitstream, `.xsa`, and on-board closure
 
-当前结果如下：
+The current results are:
 
 | Top | LUT | DSP | WNS (ns) | Fmax (MHz) | Throughput (MS/s) |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -22,16 +22,16 @@
 | `fir_l3_polyphase` | `34687` | `175` | `-4.533` | `127.129` | `381.388` |
 | `fir_l3_pipe` | `34786` | `175` | `-4.925` | `121.095` | `363.284` |
 
-## 结论
+## Conclusions
 
-- 当前问题不是“资源完全超限”
-- 当前问题也不再是“L3 放不进 7020”
-- 当前剩余的改进空间只在性能优化与展示增强，不再是主线验收阻塞
-- 在 ZU4EV 上，`L3` 已经有不错吞吐，但仍没有赢下 `performance hero` 或 `efficiency hero`
-- 当前系统级收口已经完成，后续优化应以“锦上添花”为定位
+- The current issue is no longer “resources exceed the limit completely”
+- The current issue is also no longer “L3 cannot fit on the 7020”
+- The only remaining improvement space is in performance optimization and presentation enhancement, not in mainline acceptance blockers
+- On ZU4EV, `L3` already has good throughput, but it still has not won either the `performance hero` or `efficiency hero`
+- The current system-level closure is complete, and future optimization should be treated as “nice-to-have polish”
 
-## 后续可选增强
+## Optional Follow-Up Enhancements
 
-- 为 `fir_l3_pipe` 做真正的 DSP48E2 友好 pipeline 深化，把 `L3` 拉近 `fir_pipe_systolic`
-- 在系统壳稳定后，把第二个架构接进同一软件 harness，满足“至少两个架构上板”的最终验收
-- 如有展示需求，再接入 ILA、DAQ、HDMI7611 或示波器
+- Deepen the truly DSP48E2-friendly pipeline for `fir_l3_pipe` to bring `L3` closer to `fir_pipe_systolic`
+- After the system shell is stable, connect a second architecture into the same software harness to satisfy the final acceptance target of “at least two architectures on board”
+- If presentation value is needed, later add ILA, DAQ, HDMI7611, or an oscilloscope

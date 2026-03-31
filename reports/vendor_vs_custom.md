@@ -1,73 +1,73 @@
 # Vendor vs Custom
 
-## 比较范围
+## Comparison Framing
 
-本页分两个口径讨论：
+This page discusses the comparison under two different framings:
 
-- `kernel scope`：自研 RTL 内核之间的公平比较
-- `board-shell scope`：`PS + AXI DMA + FIR shell + bare-metal harness` 的最终上板对照
+- `kernel scope`: fair comparison among custom RTL kernels
+- `board-shell scope`: final on-board comparison of `PS + AXI DMA + FIR shell + bare-metal harness`
 
 ## Kernel Scope
 
-在纯自研 RTL 内核矩阵中，当前冠军仍然是 `fir_pipe_systolic`：
+Within the pure custom RTL kernel matrix, the current champion is still `fir_pipe_systolic`:
 
 - `459.348 MHz`
 - `459.348 MS/s`
 - `132 DSP`
 - `3.803 nJ/sample`
 
-这说明对于本项目这类 261 taps、线性相位、严格 bit-true 的 FIR，精心实现的对称折叠 + systolic 流水线仍然是最强的自研工程解。
+This shows that for a project like this one, with 261 taps, linear phase, and strict bit-true FIR behavior, a carefully implemented symmetry-folded + systolic pipeline is still the strongest custom engineering solution.
 
 ## Board-Shell Scope
 
-在同一套 ZU4EV 系统壳下，`custom` 和 `vendor` 都已经完成自动烧录与板上验证：
+Under the same ZU4EV system shell, both `custom` and `vendor` have already completed automatic programming and on-board validation:
 
 | Top | Arch | Fmax est (MHz) | LUT | FF | DSP | BRAM | Power (W) | Energy/sample est (nJ) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `zu4ev_fir_pipe_systolic_top` | `board_shell_custom` | `347.826` | `20253` | `21909` | `132` | `3.0` | `2.971` | `8.542` |
 | `zu4ev_fir_vendor_top` | `board_shell_vendor_ip` | `347.102` | `8856` | `13428` | `131` | `3.0` | `2.861` | `8.243` |
 
-## 功耗分层
+## Power Breakdown
 
-如果只看 whole-system total power，两条设计看起来差距不大：
+If we only look at whole-system total power, the two designs seem fairly close:
 
 - `custom total = 2.971 W`
 - `vendor total = 2.861 W`
 
-但把 routed power 按 hierarchy 拆开以后，差异就更清楚：
+But once routed power is broken down by hierarchy, the difference becomes clearer:
 
 | Top | PS8 (W) | FIR shell (W) | DMA (W) | Interconnect (W) |
 | --- | ---: | ---: | ---: | ---: |
 | `zu4ev_fir_pipe_systolic_top` | `2.228` | `0.238` | `0.016` | `0.009` |
 | `zu4ev_fir_vendor_top` | `2.228` | `0.132` | `0.014` | `0.008` |
 
-这说明：
+This shows that:
 
-- `PS8` 基本是固定背景功耗
-- 真正体现 FIR 架构差异的，是 `fir_shell_0`
-- 在当前系统壳下，自研 shell 的 FIR 子系统动态功耗明显高于 vendor
+- `PS8` is basically a fixed background power cost
+- The real FIR-architecture difference is reflected by `fir_shell_0`
+- Under the current system shell, the FIR subsystem dynamic power of the custom shell is clearly higher than the vendor version
 
-## 关键路径观察
+## Critical-Path Observations
 
-两条系统壳都已经不是“FIR MAC 本体最慢”，而是落在 FIR 输出到 FIFO 的系统接口区：
+Neither system shell now has “the FIR MAC core itself” as the slowest path; both land in the system-interface region from FIR output to FIFO:
 
 | Top | Data Path (ns) | Logic (ns) | Route (ns) | Logic Levels | WNS (ns) |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | `zu4ev_fir_pipe_systolic_top` | `2.859` | `1.348` | `1.511` | `13` | `0.458` |
 | `zu4ev_fir_vendor_top` | `2.877` | `1.263` | `1.614` | `11` | `0.452` |
 
-两条路径都表现出 routing-dominant 特征，这也是为什么二者系统层频率几乎相同，而不会像 kernel scope 那样拉开更明显差距。
+Both paths show routing-dominant behavior, which is why the two system-level frequencies are almost the same and do not separate as clearly as they do under kernel scope.
 
-## 结论
+## Conclusions
 
-- 在 `board-shell scope` 下，`vendor FIR IP` 更省 LUT/FF，功耗和 `energy/sample` 也略优。
-- 在 `board-shell scope` 下，自研 `fir_pipe_systolic` 的频率略高，但差距很小。
-- 两条架构都通过了相同板上用例，且 `mismatches = 0`，因此这个结论是建立在同一条功能验收链上的。
-- 最终项目叙事应保持诚实：
-  - `fir_pipe_systolic` 是当前最强的自研研究型架构，也是课程项目里最有价值的自定义实现。
-  - `vendor FIR IP` 是更精简、更工业化的现成基线，在系统层面对面积与能效更有优势。
+- Under `board-shell scope`, `vendor FIR IP` uses less LUT/FF and is also slightly better in power and `energy/sample`.
+- Under `board-shell scope`, the custom `fir_pipe_systolic` runs at a slightly higher frequency, but the gap is very small.
+- Both architectures passed the same on-board cases with `mismatches = 0`, so the conclusion is based on the same functional acceptance chain.
+- The final project narrative should stay honest:
+  - `fir_pipe_systolic` is the strongest current custom research architecture and the most valuable custom implementation in the course project.
+  - `vendor FIR IP` is the leaner, more industrial ready-made baseline and has the system-level advantage in area and energy efficiency.
 
-## 为什么这个对照有价值
+## Why This Comparison Matters
 
-- 它证明我们不是只会“把 RTL 跑起来”，而是知道工业界现成基线是什么，并能在同一平台、同一位宽、同一向量、同一板测流程下做对照。
-- 它也让项目结论更可信：不是所有指标都由自研版本获胜，但自研版本在架构透明度、研究可解释性、DFG/SFG 展示、以及从 MATLAB 到 RTL 到板测的全链闭环上更有展示价值。
+- It proves that we are not only capable of “making RTL run,” but also understand what the industrial baseline looks like and can compare against it on the same platform, with the same bit widths, the same vectors, and the same board-validation flow.
+- It also makes the project conclusion more credible: not every metric is won by the custom version, but the custom version has more presentation value in architectural transparency, research interpretability, DFG/SFG presentation, and full-chain closure from MATLAB to RTL to board validation.

@@ -1,9 +1,10 @@
 flowchart LR
-    IN[3-lane input] --> DEMUX[Three-phase split]
-    DEMUX --> E0[Phase-0 branch]
-    DEMUX --> E1[Phase-1 branch]
-    DEMUX --> E2[Phase-2 branch]
-    E0 --> FFA[Recombine / FFA stage]
+    IN[3-lane block input] --> DEMUX[Deinterleave x0 / x1 / x2]
+    DEMUX --> E0[Phase branch E0]
+    DEMUX --> E1[Phase branch E1]
+    DEMUX --> E2[Phase branch E2]
+    E0 --> FFA[Shared L3 FFA recombine]
     E1 --> FFA
     E2 --> FFA
-    FFA --> OUT[3-lane output]
+    FFA --> QS[Round / Saturate]
+    QS --> OUT[3-lane output]

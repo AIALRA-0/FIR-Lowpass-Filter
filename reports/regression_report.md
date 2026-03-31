@@ -1,49 +1,49 @@
 # Regression Report
 
-## 状态
+## Status
 
-- MATLAB 浮点设计：完成
-- MATLAB 固定点扫描：完成
-- 黄金向量生成：完成
-- Vivado `xvlog` 语法检查：完成
-- Vivado `xelab` 展开：完成
-- `fir_symm_base` 标量 bit-true：已闭环
-- `fir_pipe_systolic` 标量 bit-true：已闭环
-- `fir_l2_polyphase` 向量 bit-true：已闭环
-- `fir_l3_polyphase` 向量 bit-true：已闭环
-- `fir_l3_pipe` 向量 bit-true：已闭环
-- `fir_pipe_systolic` 板上自动闭环：已闭环
-- `vendor FIR IP` 板上自动闭环：已闭环
-- 已验证回归用例：`impulse`、`step`、`random_short(1024-sample prefix)`、`lane_alignment`、`passband_edge`、`transition`、`stopband`、`multitone`、`overflow_corner`
+- MATLAB floating-point design: complete
+- MATLAB fixed-point sweep: complete
+- Golden-vector generation: complete
+- Vivado `xvlog` syntax check: complete
+- Vivado `xelab` elaboration: complete
+- `fir_symm_base` scalar bit-true: closed
+- `fir_pipe_systolic` scalar bit-true: closed
+- `fir_l2_polyphase` vector bit-true: closed
+- `fir_l3_polyphase` vector bit-true: closed
+- `fir_l3_pipe` vector bit-true: closed
+- `fir_pipe_systolic` on-board automatic closure: closed
+- `vendor FIR IP` on-board automatic closure: closed
+- Verified regression cases: `impulse`, `step`, `random_short(1024-sample prefix)`, `lane_alignment`, `passband_edge`, `transition`, `stopband`, `multitone`, `overflow_corner`
 
-## 说明
+## Notes
 
-当前仓库已经具备：
+The current repository already provides:
 
-- 自动生成黄金向量
-- 可编译的标量与向量 testbench
-- Vivado 仿真入口
-- `scripts/run_scalar_regression.ps1` 一键标量回归入口
-- `scripts/run_vector_regression.ps1` 一键向量回归入口
-- `scripts/regenerate_vectors.py` 在 MATLAB 启动异常时的向量重生成后备方案
+- automatic golden-vector generation
+- compilable scalar and vector testbenches
+- Vivado simulation entry points
+- `scripts/run_scalar_regression.ps1` as a one-command scalar regression entry
+- `scripts/run_vector_regression.ps1` as a one-command vector regression entry
+- `scripts/regenerate_vectors.py` as a fallback vector-regeneration path when MATLAB startup fails
 
-本轮修复的关键点：
+The key fixes in this round were:
 
-- testbench 改为在采样边沿前驱动激励，避免输入错一拍
-- memory file 不存在时立即 `fatal`，避免“假通过”
-- 向量量化修正为 signed fixed-point 饱和量化，消除了 `Q1.15` 下 `1.0 -> 16'h8000` 的符号翻转问题
-- `fir_symm_base` 改为显式 `hist_bus` 选取样本，消除了 `sample_at()` 在 xsim 中导致的全 `x` 问题
-- `round_sat.v` 改为对称 nearest rounding，使 RTL 与黄金模型一致
-- `fir_pipe_systolic` 在 `in_valid=0` 后仍继续推进零样本，能够正确排空流水线尾部
-- `tb_fir_vector.sv` 保持“从 staged memory 文件自动统计 `input_frames` / `output_frames`”的策略，避免 xsim `plusargs` 在 Windows 路径下的脆弱行为
-- `fir_l2_polyphase` 已替换为真实 `E0(z^2) / E1(z^2)` polyphase datapath
-- `fir_l3_polyphase` / `fir_l3_pipe` 已替换为共享 `L3 FFA core` 的真实 `L=3` polyphase datapath
-- `fir_l3_ffa_core` 的 `y2` 重组公式已修正为与当前 5-branch FFA 分解严格一致的形式，消除了 `step / lane_alignment` 下的系统性偏差
-- `fir_polyphase_coeffs.vh` 已改为允许在多个模块内重复 include，避免 `l2/l3` 混合编译时的函数声明丢失
+- the testbench now drives stimulus before the sampling edge, avoiding a one-cycle input offset
+- missing memory files now trigger an immediate `fatal`, avoiding false PASS results
+- vector quantization was corrected to signed fixed-point saturating quantization, removing the `Q1.15` sign-flip issue where `1.0 -> 16'h8000`
+- `fir_symm_base` was changed to explicit `hist_bus` sample selection, removing the all-`x` problem caused by `sample_at()` under xsim
+- `round_sat.v` was changed to symmetric nearest rounding so RTL matches the golden model
+- `fir_pipe_systolic` now continues to push zero samples after `in_valid=0`, allowing the pipeline tail to drain correctly
+- `tb_fir_vector.sv` keeps the strategy of automatically counting `input_frames` / `output_frames` from staged memory files, avoiding fragile xsim `plusargs` behavior on Windows paths
+- `fir_l2_polyphase` has been replaced by a true `E0(z^2) / E1(z^2)` polyphase datapath
+- `fir_l3_polyphase` / `fir_l3_pipe` have been replaced by true `L=3` polyphase datapaths with a shared `L3 FFA core`
+- the `y2` recombination formula in `fir_l3_ffa_core` has been corrected to match the current 5-branch FFA decomposition exactly, removing systematic deviation under `step / lane_alignment`
+- `fir_polyphase_coeffs.vh` now allows repeated inclusion across multiple modules, avoiding lost function declarations in mixed `l2/l3` compilation
 
-## 已通过的最小回归矩阵
+## Minimum Passing Regression Matrix
 
-| DUT | 用例 | 结果 |
+| DUT | Cases | Result |
 | --- | --- | --- |
 | `fir_symm_base` | `impulse` / `step` / `random_short` | PASS |
 | `fir_pipe_systolic` | `impulse` / `step` / `random_short` | PASS |
@@ -51,24 +51,24 @@
 | `fir_l3_polyphase` | `impulse` / `step` / `random_short` / `lane_alignment_l3` / `passband_edge` / `transition` / `stopband` / `multitone` / `overflow_corner` | PASS |
 | `fir_l3_pipe` | `impulse` / `step` / `random_short` / `lane_alignment_l3` / `passband_edge` / `transition` / `stopband` / `multitone` / `overflow_corner` | PASS |
 
-## 当前限制
+## Current Limitations
 
-- `scripts/run_vector_regression.ps1` 已支持 `passband_edge / transition / stopband / multitone / overflow_corner`，但仓库里尚无“一次性跑完整矩阵并汇总成表”的单命令包装
-- `fir_l3_pipe` 与 `fir_l3_polyphase` 在仿真上完全一致，仅延迟不同；当前实现差异主要体现在寄存器数量与实际 Fmax，而不是数值路径
+- `scripts/run_vector_regression.ps1` now supports `passband_edge / transition / stopband / multitone / overflow_corner`, but the repository still lacks a single-command wrapper that runs the full matrix and summarizes it into a table
+- `fir_l3_pipe` and `fir_l3_polyphase` are numerically identical in simulation and differ only in latency; the current implementation difference is mainly reflected in register count and real Fmax, not in the numerical path
 
-## 板级闭环
+## Board-Level Closure
 
-- `scripts/run_zu4ev_closure.ps1` 已经可以完成：
-  - bitstream / `.xsa` 刷新
-  - XSCT 下载 bitstream + ELF
-  - `COM9` 串口自动抓取
-  - PASS/FAIL 自动判定
-  - `data/board_results.csv` 自动刷新
-- 最新通过的板测运行：
-  - `fir_pipe_systolic`：`data/board_runs/fir_pipe_systolic/20260330-103046`
-  - `vendor_fir_ip`：`data/board_runs/vendor_fir_ip/20260330-103107`
-  - 汇总：`data/board_results.csv`
-- 两条架构都通过了：
+- `scripts/run_zu4ev_closure.ps1` can now complete:
+  - bitstream / `.xsa` refresh
+  - XSCT download of bitstream + ELF
+  - automatic `COM9` UART capture
+  - automatic PASS/FAIL judgment
+  - automatic refresh of `data/board_results.csv`
+- Latest passing board runs:
+  - `fir_pipe_systolic`: `data/board_runs/fir_pipe_systolic/20260330-103046`
+  - `vendor_fir_ip`: `data/board_runs/vendor_fir_ip/20260330-103107`
+  - Summary: `data/board_results.csv`
+- Both architectures passed:
   - `impulse`
   - `step`
   - `random_short`
@@ -77,12 +77,12 @@
   - `multitone`
   - `stopband_sine`
   - `large_random_buffer`
-- 两条架构当前板测结果都是：
+- Current board-validation results for both architectures are:
   - `mismatches = 0`
   - `failures = 0`
 
-## 当前下一优先级
+## Current Next Priorities
 
-- 为完整回归矩阵补一个统一汇总脚本，把 PASS/FAIL、latency、最大误差直接写成表
-- 若后续继续研究并行结构，优先优化 `L=3` 的 DSP48E2 深流水线版本
-- 若后续继续展示增强，可考虑把 ILA、DAQ 或示波器测量作为非主线扩展
+- Add a unified summary script for the full regression matrix so PASS/FAIL, latency, and maximum error are written directly into a table
+- If the next phase continues parallel-structure research, prioritize a deeply pipelined DSP48E2 version of `L=3`
+- If the next phase continues presentation enhancement, consider ILA, DAQ, or oscilloscope measurement as non-mainline extensions

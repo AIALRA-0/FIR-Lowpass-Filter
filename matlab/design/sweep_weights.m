@@ -21,6 +21,9 @@ for bidx = 1:numel(baseline_defs)
             nominal_weight = max(dp / ds, 1.0);
             for scale = weight_scales
                 stop_weight = nominal_weight * scale;
+                if strcmp(method, 'firls') && mod(baseline.order + 1, 2) == 0
+                    continue;
+                end
                 try
                     b = design_filter_backend(baseline.order, method, spec, stop_weight, ap_target, spec.ast_min_db);
                     metrics = evaluate_fir_metrics(b, spec);

@@ -22,6 +22,9 @@ for g = 1:numel(groups)
             stop_weight = max(dp / ds, 1.0);
             order_list = local_order_list(group.name, group.orders, spec, dp, ds);
             for order = order_list
+                if strcmp(method, 'firls') && mod(order + 1, 2) == 0
+                    continue;
+                end
                 try
                     b = design_filter_backend(order, method, spec, stop_weight, ap_target, spec.ast_min_db);
                     metrics = evaluate_fir_metrics(b, spec);

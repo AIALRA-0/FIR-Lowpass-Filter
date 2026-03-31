@@ -1,7 +1,9 @@
 flowchart LR
     IN[Input sample] --> DL[Delay line]
-    DL --> PAIR[Symmetric sample pairing]
-    PAIR --> PRE[Pre-adders]
-    PRE --> MUL[Unique multipliers]
-    MUL --> ACC[Folded accumulator]
-    ACC --> OUT[Output]
+    DL --> PAIR[Symmetric pairing]
+    PAIR --> PRE[Pre-add x_k + x_n-k]
+    COEF[Unique coeff ROM] --> MUL
+    PRE --> MUL[131 unique multipliers]
+    MUL --> ACC[Folded adder tree]
+    ACC --> QS[Round / Saturate]
+    QS --> OUT[Output]

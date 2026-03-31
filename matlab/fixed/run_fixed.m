@@ -194,7 +194,7 @@ fprintf(fid, '- Quantized passband ripple: `%.4f dB`\n', selected.ap_db(1));
 fprintf(fid, '- Quantized stopband attenuation: `%.4f dB`\n', selected.ast_db(1));
 fprintf(fid, '- Internal overflow count: `%d`\n', selected.overflow_count(1));
 fprintf(fid, '- Accumulator width: `%d`\n', selected.acc_width(1));
-fprintf(fid, '\n## 产物\n\n');
+fprintf(fid, '\n## Artifacts\n\n');
 fprintf(fid, '- `data/fixedpoint_sweep.csv`\n');
 fprintf(fid, '- `coeffs/final_fixed_q*_full.memh`\n');
 fprintf(fid, '- `coeffs/final_fixed_q*_unique.memh`\n');

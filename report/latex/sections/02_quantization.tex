@@ -1,23 +1,23 @@
-\section{量化分析}
+\section{Quantization Analysis}
 
-本章对比浮点与固定点滤波器的频率响应，分析系数量化、内部溢出风险和输出舍入策略的影响。
+This chapter compares the frequency response of the floating-point and fixed-point filters and analyzes the impact of coefficient quantization, internal overflow risk, and the output-rounding strategy.
 
-当前项目没有把 ``100 taps'' 直接当成最终答案，而是保留了 \texttt{baseline\_taps100} 与 \texttt{baseline\_order100} 两条基线。两者在 \texttt{firpm} 下都只能得到约 \texttt{40 dB} 量级的阻带衰减，因此真正满足 \texttt{Ast >= 80 dB} 的最终方案被提升到 \texttt{order = 260 / 261 taps}。这一步很重要，因为它说明当前难点并不只是系数量化，而是浮点设计本身必须先有足够 stopband 裕量。
+The current project did not treat ``100 taps'' as the final answer directly. Instead, it preserved the two baselines \texttt{baseline\_taps100} and \texttt{baseline\_order100}. Under \texttt{firpm}, both only achieve stopband attenuation at roughly the \texttt{40 dB} level, so the final solution that truly satisfies \texttt{Ast >= 80 dB} had to be raised to \texttt{order = 260 / 261 taps}. This step is important because it shows that the current challenge is not just coefficient quantization; the floating-point design itself must first have enough stopband margin.
 
-固定点扫描表明，当前默认 \texttt{Wout = 16} 时，\texttt{Wcoef = 20} 是第一个稳定跨过 \texttt{80 dB} 阻带门槛的点：\texttt{Wcoef = 16} 仅约 \texttt{67.7 dB}，\texttt{Wcoef = 18} 约 \texttt{77.2 dB}，而 \texttt{Wcoef = 20} 达到 \texttt{81.3994 dB}。继续增大到 \texttt{22} 或 \texttt{24} bit 虽然还能略微改善阻带，但收益已经明显边际化，因此本项目最终定案为 \texttt{Q1.15 + Wcoef20 + Wout16 + Wacc46}。
+The fixed-point sweep shows that, under the current default \texttt{Wout = 16}, \texttt{Wcoef = 20} is the first point that stably crosses the \texttt{80 dB} stopband threshold: \texttt{Wcoef = 16} gives only about \texttt{67.7 dB}, \texttt{Wcoef = 18} gives about \texttt{77.2 dB}, and \texttt{Wcoef = 20} reaches \texttt{81.3994 dB}. Increasing further to \texttt{22} or \texttt{24} bits still improves the stopband slightly, but the gain is already clearly marginal, so the project finally settles on \texttt{Q1.15 + Wcoef20 + Wout16 + Wacc46}.
 
-内部位宽采用保守公式
+The internal bit width uses the conservative formula
 \[
 W_{\mathrm{acc}} = W_{\mathrm{in}} + W_{\mathrm{coef}} + \lceil \log_2 N_{\mathrm{uniq}} \rceil + 2
 \]
-对当前 \texttt{261 taps}、对称折叠后 \texttt{N\_uniq = 131} 的设计，有
+For the current \texttt{261 taps} design, where symmetry folding gives \texttt{N\_uniq = 131}, we have
 \[
 W_{\mathrm{acc}} = 16 + 20 + \lceil \log_2 131 \rceil + 2 = 46 .
 \]
-利用量化后系数绝对值和可得保守整数域上界
+Using the sum of absolute quantized coefficients, we obtain the conservative integer-domain upper bound
 \[
 |y|_{\max} \le |x|_{\max} \sum_k |h_q[k]| = 32767 \times 1{,}153{,}458 = 37{,}795{,}358{,}286 ,
 \]
-该上界只需要 \texttt{37} 个带符号位宽即可容纳，而当前 \texttt{46-bit} 累加器仍保留了 \texttt{9-bit} headroom。实际扫描观测到的 \texttt{max\_abs\_acc} 更低，因此当前 \texttt{overflow\_count = 0} 并不是偶然，而是有位宽依据支撑的。
+which only requires \texttt{37} signed bits to contain, while the current \texttt{46-bit} accumulator still leaves \texttt{9-bit} headroom. The observed \texttt{max\_abs\_acc} from the actual sweep is lower still, so the current \texttt{overflow\_count = 0} is not accidental; it is supported by the chosen bit-width budget.
 
-实现上，本项目坚持内部 full precision accumulate，仅在最终输出边界执行统一的 \texttt{round-to-nearest + saturate}。这样做的价值在于：黄金向量、RTL、vendor 基线和板上 bare-metal harness 全部共享同一条末级量化规则，从而保持真正的 bit-true 比较口径。
+In implementation, the project insists on full-precision internal accumulation and performs a unified \texttt{round-to-nearest + saturate} operation only at the final output boundary. The value of this choice is that the golden vectors, RTL, vendor baseline, and on-board bare-metal harness all share the same final-stage quantization rule, preserving a truly bit-true comparison frame.
