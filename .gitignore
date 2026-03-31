@@ -62,3 +62,12 @@ xsc.log
 webtalk*.jou
 webtalk*.log
 iter_*_CongestedCLBsAndNets.txt
+
+# Local drafts / preview files
+Report copy.md
+Report.before-finalize.bak
+Report.en.preview.md
+
+# Local reference materials
+docs/mzu04a-4ev/
+docs/xc7z020clg400-2/
