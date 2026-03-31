@@ -106,7 +106,7 @@ Subsequently, the two are evaluated uniformly through design space exploration, 
 ### 2.3 Definition of Success
 
 This project defines success as a comprehensive criterion across multiple implementation levels, that is, it not only requires the design to be correct, but also requires the implementation to be correct and the system verification to be correct, specifically including
-* **Algorithm level**: both floating-point and fixed-point designs satisfy the frequency-domain specifications($Ast \ge 80\mathrm{dB}$), proving that the design holds under both ideal and finite word-length conditions
+* **Algorithm level**: both floating-point and fixed-point designs satisfy the frequency-domain specifications ($Ast \ge 80\,\mathrm{dB}$), proving that the design holds under both ideal and finite word-length conditions
 * **RTL level**: the RTL output is bit-true and matches the golden vectors point by point, ensuring complete alignment between implementation and model
 * **Implementation level**: Vivado can complete synthesis and place-and-route(post-route), and output complete timing, resource, and power results, indicating that the design can be truly deployed
 * **System level**: the FPGA board-level test passes the complete test suite, and $mismatches = 0$, verifying that the data path, control logic, and DMA interface are all correct in the real hardware environment
@@ -284,11 +284,11 @@ In this project, the design constraints are a narrow transition band ($0.03\pi$)
 In this case
 * If the firls method is used, it focuses on minimizing the error in an average sense, so it may distribute the error across various frequency points, making the overall performance very good, but it cannot guarantee that every stopband frequency point meets the requirement, so although the overall stopband energy may be low, some frequency points may exhibit local leakage, that is, insufficient attenuation at individual frequencies, causing the Ast specification to fail
 * If kaiserord + fir1 is used, its advantage is that the structure is simple and the design is intuitive, but its performance is mainly determined by empirical formulas for mainlobe width and sidelobe attenuation, and it cannot precisely control the error at each frequency point; therefore, in order to ensure that all stopband frequency points satisfy the worst-case constraint of 80 dB, it is often necessary to manually increase the order, thereby expanding the degrees of freedom to reduce the worst-point error, which directly leads to an increase in filter taps and multiplier count, and thus increases hardware resource and power consumption cost
-* In contrast, the firpm method uses the minimax criterion, that is, it optimizes for the worst case, therefore, under the same order, it can distribute the error more uniformly, so that the maximum deviation in the passband and stopband is simultaneously reduced, thereby more effectively ensuring that all stopband frequency points satisfy the stopband attenuation constraint $Ast$(Stopband Attenuation)$\ge 80\mathrm{dB}$, without needing to increase the order further
+* In contrast, the firpm method uses the minimax criterion, that is, it optimizes for the worst case, therefore, under the same order, it can distribute the error more uniformly, so that the maximum deviation in the passband and stopband is simultaneously reduced, thereby more effectively ensuring that all stopband frequency points satisfy the stopband attenuation constraint $Ast$ (Stopband Attenuation) $\ge 80\,\mathrm{dB}$, without needing to increase the order further
 
 Therefore, in a design task like this project that is dominated by worst-case specifications, firpm can use a limited number of coefficients more efficiently, and is a more suitable main design method
 
-In order to avoid conclusions remaining only at the qualitative description level of methods without data support, this project carried out a systematic order scan of different design methods under the same specifications; specifically, I used the MATLAB script run_all.m to call sweep_orders.m, and under unified design conditions, passband $w_p = 0.2$, stopband $w_s = 0.23$, and stopband specification $Ast \ge 80\mathrm{dB}$, tried different orders one by one for firpm, firls, and kaiserord + fir1, and recorded their actual frequency response performance
+In order to avoid conclusions remaining only at the qualitative description level of methods without data support, this project carried out a systematic order scan of different design methods under the same specifications; specifically, I used the MATLAB script run_all.m to call sweep_orders.m, and under unified design conditions, passband $w_p = 0.2$, stopband $w_s = 0.23$, and stopband specification $Ast \ge 80\,\mathrm{dB}$, tried different orders one by one for firpm, firls, and kaiserord + fir1, and recorded their actual frequency response performance
 
 The core idea of the scan is to continuously increase the taps, or in other words, the order of the filter, and observe at what point the stopband attenuation requirement of 80 dB can first be met; for this purpose, I adopted a two-stage strategy from coarse to fine, first performing a coarse sweep over a large range with a fixed step size such as 100:20:520, in order to quickly locate the possible feasible interval
 
@@ -359,13 +359,13 @@ In Chapter 1, I already pointed out that 100 taps is semantically ambiguous, the
 
 Although the two differ by only one coefficient, under the conditions of this project, where the transition band is extremely narrow and the stopband attenuation requirement is very high, even a one-tap change may produce a measurable effect on the frequency response; therefore, this project did not subjectively choose one interpretation, but retained both baselines simultaneously and evaluated them under exactly the same specifications and process
 
-To this end, this project continues to use the unified scanning framework of 6.1, calling sweep_orders.m through run_all.m, and under fixed specifications $w_p = 0.2$、$w_s = 0.23$、$Ast \ge 80\mathrm{dB}$, evaluates three types of design groups
+To this end, this project continues to use the unified scanning framework of 6.1, calling sweep_orders.m through run_all.m, and under fixed specifications $w_p = 0.2$, $w_s = 0.23$, and $Ast \ge 80\,\mathrm{dB}$, evaluates three types of design groups
 
 * **baseline_taps100**: Fixed $order = 99$
 * **baseline_order100**: Fixed $order = 100$
 * **final_spec**: Allows searching for the minimum feasible order
 
-At the same time, multiple groups of passband constraints $Ap\ target = {0.01, 0.05, 0.1}\mathrm{dB}$ are retained, and firpm, firls, and kaiserord + fir1 are uniformly evaluated, so that it can be observed whether, even when the baseline order itself is fixed, different methods have any possibility of satisfying $Ast \ge 80\mathrm{dB}$
+At the same time, multiple groups of passband constraints $Ap_{target} \in \{0.01, 0.05, 0.1\}\,\mathrm{dB}$ are retained, and firpm, firls, and kaiserord + fir1 are uniformly evaluated, so that it can be observed whether, even when the baseline order itself is fixed, different methods have any possibility of satisfying $Ast \ge 80\,\mathrm{dB}$
 
 ### Figure 6-3: Frequency Response Comparison of Dual Baselines and Final Floating-Point Solution
 
@@ -1788,14 +1788,14 @@ If this project is continued further, the two most valuable directions for impro
 
 ### 16.1 References
 
-[1] ECSE 6680 course project specification, Spring 2026
-[2] MathWorks, *FIR Filter Design*, Signal Processing Toolbox documentation
-[3] MathWorks, *firpm*, Signal Processing Toolbox documentation
-[4] MathWorks, *Fixed-Point Filter Design*, documentation for fixed-point DSP workflow and quantized filter analysis
-[5] AMD, *FIR Compiler Product Guide*, PG149
-[6] AMD, *Zynq UltraScale+ Device Technical Reference Manual*, UG1085
-[7] AMD, *UltraScale Architecture DSP Slice User Guide*, UG579
-[8] K. K. Parhi, *VLSI Digital Signal Processing Systems: Design and Implementation*, New York, NY, USA: Wiley, 1999
+* [1] ECSE 6680 course project specification, Spring 2026
+* [2] MathWorks, *FIR Filter Design*, Signal Processing Toolbox documentation
+* [3] MathWorks, *firpm*, Signal Processing Toolbox documentation
+* [4] MathWorks, *Fixed-Point Filter Design*, documentation for fixed-point DSP workflow and quantized filter analysis
+* [5] AMD, *FIR Compiler Product Guide*, PG149
+* [6] AMD, *Zynq UltraScale+ Device Technical Reference Manual*, UG1085
+* [7] AMD, *UltraScale Architecture DSP Slice User Guide*, UG579
+* [8] K. K. Parhi, *VLSI Digital Signal Processing Systems: Design and Implementation*, New York, NY, USA: Wiley, 1999
 
 ### 16.2 Tool statement
 
