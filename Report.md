@@ -955,15 +955,15 @@ This step is completely consistent with the idea of $L=2$, except that now it is
 At this point both the input and the coefficients have been split into three groups, so the output is no longer directly obtained by a single path, but instead the results of the three branches are recombined according to a fixed matrix relationship
 
 $$
-y_0[m] = E_0*x_0 + z^{-1}(E_1*x_2 + E_2*x_1)
+y_0[m] = E_{0}x_{0} + z^{-1}\left(E_{1}x_{2} + E_{2}x_{1}\right)
 $$
 
 $$
-y_1[m] = E_0*x_1 + E_1*x_0 + z^{-1}(E_2*x_2)
+y_1[m] = E_{0}x_{1} + E_{1}x_{0} + z^{-1}\left(E_{2}x_{2}\right)
 $$
 
 $$
-y_2[m] = E_0*x_2 + E_1*x_1 + E_2*x_0
+y_2[m] = E_{0}x_{2} + E_{1}x_{1} + E_{2}x_{0}
 $$
 
 These three equations describe which branch results compose the three output positions respectively
