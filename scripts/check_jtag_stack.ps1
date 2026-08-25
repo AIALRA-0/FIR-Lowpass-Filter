@@ -1,5 +1,5 @@
 param(
-    [string]$VivadoBin = $(if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'E:\Xilinx\Vivado\2024.1\bin' }),
+    [string]$VivadoBin = $(if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'C:\Xilinx\Vivado\2024.1\bin' }),
     [string]$HwServerUrl = 'localhost:3121'
 )
 

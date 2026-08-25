@@ -5,8 +5,8 @@ param(
     [string]$Arch,
     [switch]$ForcePlatformRegen,
     [string]$StageRoot = 'C:\codex_stage\zu4ev_closure',
-    [string]$XsctBin = $(if ($env:XSCT_BIN) { $env:XSCT_BIN } else { 'E:\Xilinx\Vitis\2024.1\bin\xsct.bat' }),
-    [string]$GccExe = $(if ($env:AARCH64_GCC) { $env:AARCH64_GCC } else { 'E:\Xilinx\Vitis\2024.1\gnu\aarch64\nt\aarch64-none\bin\aarch64-none-elf-gcc.exe' })
+    [string]$XsctBin = $(if ($env:XSCT_BIN) { $env:XSCT_BIN } else { 'C:\Xilinx\Vitis\2024.1\bin\xsct.bat' }),
+    [string]$GccExe = $(if ($env:AARCH64_GCC) { $env:AARCH64_GCC } else { 'C:\Xilinx\Vitis\2024.1\gnu\aarch64\nt\aarch64-none\bin\aarch64-none-elf-gcc.exe' })
 )
 
 $ErrorActionPreference = 'Stop'

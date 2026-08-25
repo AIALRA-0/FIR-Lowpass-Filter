@@ -1,12 +1,12 @@
 param(
     [ValidateSet('fir_pipe_systolic', 'vendor_fir_ip', 'all')]
     [string]$Arch = 'all',
-    [string]$ComPort = 'COM9',
+    [string]$ComPort = $(if ($env:FIR_UART_PORT) { $env:FIR_UART_PORT } else { '' }),
     [int]$MaxAttempts = 2,
     [switch]$ForceHardwareBuild,
     [switch]$ForceAppBuild,
-    [string]$VivadoBin = $(if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'E:\Xilinx\Vivado\2024.1\bin' }),
-    [string]$XsctBin = $(if ($env:XSCT_BIN) { $env:XSCT_BIN } else { 'E:\Xilinx\Vitis\2024.1\bin\xsct.bat' }),
+    [string]$VivadoBin = $(if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'C:\Xilinx\Vivado\2024.1\bin' }),
+    [string]$XsctBin = $(if ($env:XSCT_BIN) { $env:XSCT_BIN } else { 'C:\Xilinx\Vitis\2024.1\bin\xsct.bat' }),
     [string]$PythonExe = $(if ($env:PYTHON_EXE) { $env:PYTHON_EXE } else { 'python' })
 )
 
@@ -29,6 +29,9 @@ $archMeta = @{
 }
 
 function Invoke-Preflight {
+    if ([string]::IsNullOrWhiteSpace($ComPort)) {
+        throw 'UART port is required. Pass -ComPort or set FIR_UART_PORT in the local environment.'
+    }
     if (-not (Get-Command $PythonExe -ErrorAction SilentlyContinue)) {
         throw "Python executable not found: $PythonExe"
     }

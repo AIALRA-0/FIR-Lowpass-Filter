@@ -7,7 +7,7 @@ The ZU4EV board-level automation closure is now running stably. Both of the curr
 - automatic bitstream generation and export
 - automatic `.xsa` export
 - automatic XSCT/JTAG download of bitstream + ELF
-- automatic `COM9 / CP210x` UART capture
+- automatic `SERIAL_PORT / CP210x` UART capture
 - automatic judgment for smoke + frequency-edge + long-run cases
 
 The current formal endgame targets are:

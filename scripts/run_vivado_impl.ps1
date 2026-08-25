@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).ProviderPath
-$vivadoBin = if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'E:\Xilinx\Vivado\2024.1\bin' }
+$vivadoBin = if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'C:\Xilinx\Vivado\2024.1\bin' }
 $vivado = Join-Path $vivadoBin 'vivado.bat'
 $spec = $null
 try {

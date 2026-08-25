@@ -7,7 +7,7 @@ This page records the current board-level and connectivity conventions for the m
 - Development board: `MZU04A-4EV`
 - Main device: `XCZU4EV-SFVC784-2I`
 - JTAG: Vivado Hardware Manager can already enumerate `xczu4` and `arm_dap`
-- UART: `COM9 / Silicon Labs CP210x`
+- UART: `SERIAL_PORT / Silicon Labs CP210x`
 - Power: `12V`
 - Mainline software stack: `Bare-metal Vitis`
 
@@ -15,7 +15,7 @@ This page records the current board-level and connectivity conventions for the m
 
 - Connect `12V` external power to the development board
 - Connect the JTAG download cable to the board's JTAG port
-- After connecting the UART debug port to the host, Device Manager should show a `CP210x` serial port, currently `COM9`
+- After connecting the UART debug port to the host, Device Manager should show a `CP210x` serial port, currently `SERIAL_PORT`
 - Do not treat UART as the download path; the main download and debug path is always JTAG
 
 ## Default Boot Conditions
@@ -96,7 +96,7 @@ powershell -ExecutionPolicy Bypass -File scripts/run_zu4ev_closure.ps1 -Arch ven
 - `CP210x` is visible, but `xczu4` is not
   - Check the JTAG cable and power first, and do not treat UART as the download clue
 - `xczu4` is visible, but the software prints nothing on the serial port
-  - First confirm that `COM9` is not occupied by another serial tool, then check PS UART0 configuration and MIO assignment
+  - First confirm that `SERIAL_PORT` is not occupied by another serial tool, then check PS UART0 configuration and MIO assignment
 - The bitstream downloads, but DMA does not work
   - First verify `AXI DMA`, the DDR/OCM buffer path, and cache flush/invalidate logic with a minimum loopback and short vectors
 

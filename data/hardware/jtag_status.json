@@ -1,24 +1,24 @@
-﻿{
+{
     "checked_at":  "2026-03-30T11:38:05",
     "board_name":  "MZU04A-4EV",
     "target_part":  "xczu4ev-sfvc784-2-i",
-    "uart_console":  "COM9",
+    "uart_console":  "SERIAL_PORT",
     "jtag_boot_switch":  [
                              "ON",
                              "ON",
                              "ON"
                          ],
-    "vivado_bin":  "E:\\Xilinx\\Vivado\\2024.1\\bin",
-    "hw_server":  "E:\\Xilinx\\Vivado\\2024.1\\bin\\hw_server.bat",
-    "vivado":  "E:\\Xilinx\\Vivado\\2024.1\\bin\\vivado.bat",
-    "digilent_installer":  "E:\\Xilinx\\Vivado\\2024.1\\data\\xicom\\cable_drivers\\nt64\\digilent\\install_digilent.exe",
+    "vivado_bin":  "C:\\Xilinx\\Vivado\\2024.1\\bin",
+    "hw_server":  "C:\\Xilinx\\Vivado\\2024.1\\bin\\hw_server.bat",
+    "vivado":  "C:\\Xilinx\\Vivado\\2024.1\\bin\\vivado.bat",
+    "digilent_installer":  "C:\\Xilinx\\Vivado\\2024.1\\data\\xicom\\cable_drivers\\nt64\\digilent\\install_digilent.exe",
     "hw_server_url":  "localhost:3121",
     "present_devices":  [
                             {
-                                "friendly_name":  "Silicon Labs CP210x USB to UART Bridge (COM9)",
+                                "friendly_name":  "Silicon Labs CP210x USB to UART Bridge (SERIAL_PORT)",
                                 "class":  "Ports",
                                 "status":  "OK",
-                                "instance_id":  "USB\\VID_10C4\u0026PID_EA60\\0244B448",
+                                "instance_id":  "USB\\VID_10C4\u0026PID_EA60\\UART_DEVICE_ID",
                                 "driver_inf":  "oem195.inf",
                                 "provider":  "Silicon Laboratories Inc.",
                                 "service":  "silabser"
@@ -27,7 +27,7 @@
                                 "friendly_name":  "USB Serial Converter",
                                 "class":  "USB",
                                 "status":  "OK",
-                                "instance_id":  "USB\\VID_0403\u0026PID_6014\\210299BBCF40",
+                                "instance_id":  "USB\\VID_0403\u0026PID_6014\\JTAG_TARGET_ID",
                                 "driver_inf":  "oem104.inf",
                                 "provider":  "FTDI",
                                 "service":  "FTDIBUS"
@@ -55,7 +55,7 @@
                                ],
     "hw_targets":  [
                        {
-                           "target":  "localhost:3121/xilinx_tcf/Digilent/210299BBCF40",
+                           "target":  "localhost:3121/xilinx_tcf/Digilent/JTAG_TARGET_ID",
                            "open_rc":  0,
                            "open_msg":  "",
                            "device_count":  2
@@ -63,13 +63,13 @@
                    ],
     "hw_devices":  [
                        {
-                           "target":  "localhost:3121/xilinx_tcf/Digilent/210299BBCF40",
+                           "target":  "localhost:3121/xilinx_tcf/Digilent/JTAG_TARGET_ID",
                            "hw_device":  "xczu4_0",
                            "part":  "xczu4",
                            "idcode":  "00000100011100100001000010010011"
                        },
                        {
-                           "target":  "localhost:3121/xilinx_tcf/Digilent/210299BBCF40",
+                           "target":  "localhost:3121/xilinx_tcf/Digilent/JTAG_TARGET_ID",
                            "hw_device":  "arm_dap_1",
                            "part":  "arm_dap",
                            "idcode":  "01011011101000000000010001110111"

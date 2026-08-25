@@ -2,8 +2,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$BuildInfoPath,
     [string]$HwServerUrl = 'tcp:127.0.0.1:3121',
-    [string]$VivadoBin = $(if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'E:\Xilinx\Vivado\2024.1\bin' }),
-    [string]$XsctBin = $(if ($env:XSCT_BIN) { $env:XSCT_BIN } else { 'E:\Xilinx\Vitis\2024.1\bin\xsct.bat' })
+    [string]$VivadoBin = $(if ($env:VIVADO_BIN) { $env:VIVADO_BIN } else { 'C:\Xilinx\Vivado\2024.1\bin' }),
+    [string]$XsctBin = $(if ($env:XSCT_BIN) { $env:XSCT_BIN } else { 'C:\Xilinx\Vitis\2024.1\bin\xsct.bat' })
 )
 
 $ErrorActionPreference = 'Stop'

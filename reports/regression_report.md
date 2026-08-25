@@ -61,7 +61,7 @@ The key fixes in this round were:
 - `scripts/run_zu4ev_closure.ps1` can now complete:
   - bitstream / `.xsa` refresh
   - XSCT download of bitstream + ELF
-  - automatic `COM9` UART capture
+  - automatic `SERIAL_PORT` UART capture
   - automatic PASS/FAIL judgment
   - automatic refresh of `data/board_results.csv`
 - Latest passing board runs:

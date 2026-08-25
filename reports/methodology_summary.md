@@ -39,7 +39,7 @@ This page consolidates the “comparison framing” that is otherwise easy to sc
 
 | Stage | Tool/Script | Purpose |
 | --- | --- | --- |
-| Preflight | `scripts/check_jtag_stack.ps1` | confirm `xczu4`, `arm_dap`, `COM9 / CP210x` |
+| Preflight | `scripts/check_jtag_stack.ps1` | confirm `xczu4`, `arm_dap`, `SERIAL_PORT / CP210x` |
 | App build | `scripts/build_zu4ev_app.ps1` | export `.xsa`, generate bare-metal app, save `build_info.json` |
 | Programming | `scripts/program_zu4ev.ps1` + XSCT/JTAG | automatically download bitstream + ELF |
 | UART capture | `scripts/capture_uart.py` | automatically capture case logs and decide `PASS/FAIL` |

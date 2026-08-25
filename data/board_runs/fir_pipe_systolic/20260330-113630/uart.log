@@ -6,7 +6,7 @@ DMA buffers tx=0x00000000FFFD9D00 rx=0x00000000FFFD8D00
 stage=platform_init_done
 stage=dma_init_begin
 stage=dma_init_done
-Console=COM9, arch_id=1
+Console=SERIAL_PORT, arch_id=1
 stage=impulse:case_begin len=1024
 stage=impulse:buffers_loaded
 stage=impulse:buffers_ready

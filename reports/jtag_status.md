@@ -1,4 +1,4 @@
-﻿# JTAG Status
+# JTAG Status
 
 Checked at: 2026-03-30T11:38:05
 
@@ -6,19 +6,19 @@ Checked at: 2026-03-30T11:38:05
 
 - board_name: MZU04A-4EV
 - target_part: xczu4ev-sfvc784-2-i
-- uart_console: COM9
+- uart_console: SERIAL_PORT
 - jtag_boot_switch: ON / ON / ON
 
 ## Toolchain
 
-- Vivado bin: E:\Xilinx\Vivado\2024.1\bin
-- hw_server: E:\Xilinx\Vivado\2024.1\bin\hw_server.bat
-- Digilent installer: E:\Xilinx\Vivado\2024.1\data\xicom\cable_drivers\nt64\digilent\install_digilent.exe
+- Vivado bin: C:\Xilinx\Vivado\2024.1\bin
+- hw_server: C:\Xilinx\Vivado\2024.1\bin\hw_server.bat
+- Digilent installer: C:\Xilinx\Vivado\2024.1\data\xicom\cable_drivers\nt64\digilent\install_digilent.exe
 
 ## Present USB Devices
 
-- Silicon Labs CP210x USB to UART Bridge (COM9) | class=Ports | provider=Silicon Laboratories Inc. | inf=oem195.inf | service=silabser | instance=USB\VID_10C4&PID_EA60\0244B448
-- USB Serial Converter | class=USB | provider=FTDI | inf=oem104.inf | service=FTDIBUS | instance=USB\VID_0403&PID_6014\210299BBCF40
+- Silicon Labs CP210x USB to UART Bridge (SERIAL_PORT) | class=Ports | provider=Silicon Laboratories Inc. | inf=oem195.inf | service=silabser | instance=USB\VID_10C4&PID_EA60\UART_DEVICE_ID
+- USB Serial Converter | class=USB | provider=FTDI | inf=oem104.inf | service=FTDIBUS | instance=USB\VID_0403&PID_6014\JTAG_TARGET_ID
 
 ## Installed Driver Hints
 
@@ -57,12 +57,12 @@ Checked at: 2026-03-30T11:38:05
 - server_url: localhost:3121
 - target_count: 1
 
-- localhost:3121/xilinx_tcf/Digilent/210299BBCF40 | open_rc=0 | device_count=2 | message=
+- localhost:3121/xilinx_tcf/Digilent/JTAG_TARGET_ID | open_rc=0 | device_count=2 | message=
 
 ## Enumerated Devices
 
-- localhost:3121/xilinx_tcf/Digilent/210299BBCF40 | part=xczu4 | idcode=00000100011100100001000010010011
-- localhost:3121/xilinx_tcf/Digilent/210299BBCF40 | part=arm_dap | idcode=01011011101000000000010001110111
+- localhost:3121/xilinx_tcf/Digilent/JTAG_TARGET_ID | part=xczu4 | idcode=00000100011100100001000010010011
+- localhost:3121/xilinx_tcf/Digilent/JTAG_TARGET_ID | part=arm_dap | idcode=01011011101000000000010001110111
 
 ## Diagnosis
 

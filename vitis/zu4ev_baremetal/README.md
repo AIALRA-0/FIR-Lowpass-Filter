@@ -2,7 +2,7 @@
 
 This directory stores the mainline bare-metal project source files for `MZU04A-4EV / XCZU4EV-SFVC784-2I`. The mainline strategy is fixed as follows:
 
-- `PS UART0` is connected to the on-board `CP2104`, and the host-side console is `COM9`
+- `PS UART0` is connected to the on-board `CP2104`, and the host-side console is `SERIAL_PORT`
 - JTAG is used to download the bitstream / ELF
 - `AXI DMA + AXI-Stream FIR shell + AXI-Lite control` acts as the unified system shell
 - The software only uses scalar `Q1.15` sample arrays, without distinguishing `scalar / L2 / L3`

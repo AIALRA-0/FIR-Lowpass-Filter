@@ -4,7 +4,7 @@ This page organizes the JTAG board-bring-up chain for the `xc7z020clg400-2` deve
 
 ## Board Facts
 
-- `CH340 / COM7` is `USB-UART` and does not carry JTAG.
+- `CH340 / ALTERNATE_SERIAL_PORT` is `USB-UART` and does not carry JTAG.
 - JTAG uses the separate `14-pin` connector on the baseboard; the documentation states that this port is hard-wired to the core board's `6-pin JTAG`.
 - The current project's default target board is `xc7z020clg400-2`.
 - According to the board documentation, the fixed JTAG boot mode is:
@@ -14,12 +14,12 @@ This page organizes the JTAG board-bring-up chain for the `xc7z020clg400-2` deve
 ## Current Host-Side Conclusion
 
 - Windows can see:
-  - `USB-SERIAL CH340 (COM7)`
+  - `USB-SERIAL CH340 (ALTERNATE_SERIAL_PORT)`
   - two `VID_0403&PID_6014` FTDI devices
 - `pnputil` shows that both Digilent and Xilinx cable drivers are installed.
 - The current `hw_server` can enumerate two Digilent targets:
-  - `210299BBCF40`
-  - `210512180081`
+  - `JTAG_TARGET_ID`
+  - `ALTERNATE_JTAG_TARGET_ID`
 - But `open_hw_target` reports `No devices detected on target ...` for both targets
 
 This means the main blocker is no longer “Vivado cannot see the download cable at all,” but rather “the download cable is visible, yet no device IDCODE is being read on the JTAG chain.”
@@ -32,8 +32,8 @@ powershell -ExecutionPolicy Bypass -File scripts/check_jtag_stack.ps1
 
 The script outputs:
 
-- [jtag_status.json](/c:/Users/AIALRA-PORTABLE/Desktop/Project%201/data/hardware/jtag_status.json)
-- [jtag_status.md](/c:/Users/AIALRA-PORTABLE/Desktop/Project%201/reports/jtag_status.md)
+- [jtag_status.json](../data/hardware/jtag_status.json)
+- [jtag_status.md](../reports/jtag_status.md)
 
 ## Recommended Troubleshooting Order
 

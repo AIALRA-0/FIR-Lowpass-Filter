@@ -1,6 +1,6 @@
 # FIR Lowpass Filter Design and Implementation Report
 
-### Lucas Ding
+### Project Author
 
 
 ## 1. Project Overview
@@ -1462,7 +1462,7 @@ The main platform is fixed as
 
 - **Main board**: MZU04A-4EV
 - **Main device**: XCZU4EV-SFVC784-2I
-- **UART**: COM9 / CP210x
+- **UART**: SERIAL_PORT / CP210x
 - **JTAG**: Vivado Hardware Manager can recognize xczu4 and arm_dap
 - **Power supply**: 12V
 
@@ -1481,12 +1481,12 @@ The main platform is fixed as
 | FPGA platform | MZU04A-4EV / XCZU4EV-SFVC784-2I | Main implementation and board test platform |
 | Toolchain | Vivado 2024.1 + XSCT + Vitis bare-metal | Implementation, download, and application build |
 | JTAG | xczu4 + arm_dap | bitstream + ELF download |
-| UART | COM9 / CP210x | Runtime log and PASS/FAIL judgment |
+| UART | SERIAL_PORT / CP210x | Runtime log and PASS/FAIL judgment |
 | System structure | PS + AXI DMA + FIR shell + AXI-Lite control | Formal board-level closed loop |
 
 
 - The main JTAG path works through Vivado Hardware Manager and XSCT; XSCT is short for Xilinx Software Command-Line Tool, which can be simply understood as the software-side console tool provided by Xilinx for operating the PS (ARM) and debugging the system
-- UART is only responsible for outputting the on-board program log through COM9 / CP210x
+- UART is only responsible for outputting the on-board program log through SERIAL_PORT / CP210x
 - 12V external power supply, JTAG download cable, and UART debug cable constitute the standard bring-up connection method
 
 If you need to reproduce the conclusions in this section about the board online status and interface visibility, you can directly run
@@ -1516,7 +1516,7 @@ flowchart TB
     A --> C[AXI DMA MM2S/S2MM]
     C --> D[FIR stream shell]
     D --> E[output FIFO]
-    A --> F[UART COM9]
+    A --> F[UART SERIAL_PORT]
     A --> G[OCM / DMA buffers]
 ```
 
@@ -1575,7 +1575,7 @@ What this project finally adopts is a fully automated board-test closed loop, ra
 
 The formal closed loop is fully automated and does not rely on manual GUI operations; the overall path is as follows
 
-* **check_jtag_stack.ps1**: First checks whether the board is "connected", including whether the JTAG target can be recognized and whether the serial port is on COM9, avoiding discovering halfway through execution that the hardware was not connected properly
+* **check_jtag_stack.ps1**: First checks whether the board is "connected", including whether the JTAG target can be recognized and whether the serial port is on SERIAL_PORT, avoiding discovering halfway through execution that the hardware was not connected properly
 * **build_zu4ev_app.ps1**: Exports the hardware as .xsa, and then compiles the PS-side bare-metal program based on it, which is equivalent to preparing "the software to run on the board"
 * **program_zu4ev.ps1**: Uses XSCT to burn the bitstream into PL, download the ELF to PS, and start execution; this step is what truly "gets the entire system running"
 * **capture_uart.py**: Automatically captures the serial output and completely saves the runtime log (including PASS/FAIL and intermediate information), avoiding manual staring at the terminal
@@ -1633,9 +1633,9 @@ A very critical conclusion can be directly read from Table 13-1: the current two
 
 This means that the current board-test conclusion is no longer just "the board can run the program", but the stricter statement that in the real PS + DMA + PL system, the on-board output is completely consistent with the golden vector point by point, and this judgment is obtained on the complete formal suite rather than by some single use case passing by chance
 
-### Figure 13-2: COM9 serial PASS log summary
+### Figure 13-2: SERIAL_PORT serial PASS log summary
 
-![COM9 UART PASS summary](docs/assets/pictures/ch13-fig13-02-com9-uart-pass-summary.png)
+![SERIAL_PORT UART PASS summary](docs/assets/pictures/ch13-fig13-02-com9-uart-pass-summary.png)
 
 If you need to reproduce the source of the results in Table 13-1, after completing the formal closed loop you can focus on checking
 

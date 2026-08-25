@@ -1,9 +1,9 @@
 {
-  "port": "COM9",
+  "port": "SERIAL_PORT",
   "baud": 115200,
   "started_at": "2026-03-30T10:31:07",
   "arch_id": 5,
-  "console": "COM9",
+  "console": "SERIAL_PORT",
   "cases": [
     {
       "name": "impulse",

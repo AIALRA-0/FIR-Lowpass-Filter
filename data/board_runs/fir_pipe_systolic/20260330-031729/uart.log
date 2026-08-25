@@ -5,4 +5,4 @@ stage=platform_init_begin
 stage=platform_init_done
 stage=dma_init_begin
 stage=dma_init_done
-Console=COM9, arch_id=1
+Console=SERIAL_PORT, arch_id=1

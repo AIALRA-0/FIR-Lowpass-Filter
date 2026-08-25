@@ -23,7 +23,7 @@
 - MATLAB: `R2024b`
 - Main FPGA: `xczu4ev-sfvc784-2-i`
 - Development board: `MZU04A-4EV`
-- UART: `COM9 / CP210x`
+- UART: `SERIAL_PORT / CP210x`
 - Report language: English mainline
 - Git flow: direct push to `main`
 

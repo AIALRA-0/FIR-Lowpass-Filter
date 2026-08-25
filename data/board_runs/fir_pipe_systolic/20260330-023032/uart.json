@@ -1,5 +1,5 @@
 {
-  "port": "COM9",
+  "port": "SERIAL_PORT",
   "baud": 115200,
   "started_at": "2026-03-30T02:30:32",
   "arch_id": null,

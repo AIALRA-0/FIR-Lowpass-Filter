@@ -53,7 +53,7 @@ This project consistently follows the normalized-frequency convention used by Ma
 - Development board: `MZU04A-4EV`
 - Main chip: `XCZU4EV-SFVC784-2I`
 - PS serial port: `UART0`, `MIO34/35`
-- Main console: `COM9 / CP210x`
+- Main console: `SERIAL_PORT / CP210x`
 - JTAG boot mode: `switch 1-ON 2-ON 3-ON`
 
 ## ZU4EV Implementation Defaults

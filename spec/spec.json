@@ -5,7 +5,7 @@
   "target_part": "xczu4ev-sfvc784-2-i",
   "target_target_period_ns": 3.333,
   "aggressive_target_period_ns": 2.5,
-  "uart_console": "COM9",
+  "uart_console": "CP210x UART with a host-local port",
   "wp": 0.2,
   "ws": 0.23,
   "ast_min_db": 80.0,

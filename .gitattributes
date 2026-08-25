@@ -1,0 +1,16 @@
+# Keep documentation, data, source, and vector assets stable across platforms.
+*.md text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+*.py text eol=lf
+*.m text eol=lf
+*.v text eol=lf
+*.sv text eol=lf
+*.vh text eol=lf
+*.tcl text eol=lf
+*.svg text eol=lf
+*.memh text eol=lf
+
+# Preserve Windows-native automation scripts for local toolchains.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
